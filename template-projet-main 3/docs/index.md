@@ -29,6 +29,9 @@ citoyens).
 Ce projet vise à établir un suivi clair et concret des initiatives mises en place par les universités dans le cadre de leur engagement écologique pour la période 2024-2029. Il s’inscrit dans un effort collectif lié au plan stratégique visant à atteindre la carboneutralité d’ici 2040.
 
 ### Problématique ou motivations
+Actuellement, bien que plusieurs universités publient des rapports accessibles au public — comme les bilans de carbone et la liste des initiatives en développement durable —, il manque un véritable mécanisme de suivi pour évaluer l'évolution et l'impact réel de ces actions. Ce manque limite la capacité à identifier les lacunes, à comparer les efforts entre établissements et à proposer des améliorations concrètes.
+
+Notre objectif est donc de mettre en place un outil de suivi structuré et représentatif afin de mieux évaluer les progrès réalisés, et, le cas échéant, proposer des pistes de solution là où des failles sont observées.
 
 
 ### Proposition et objectifs
