@@ -14,14 +14,22 @@
 
 ## Équipe
 
-- Alice Dupont: Responsable de...
-- Bob Tremblay: Responsable de...
+- Catina Beaulie
+- Asmaa Zohr Skou 
+- Nada Alem
 
 ## Description du projet
+Le projet Carte Eco-Campus consiste au développement d’une plateforme interactive de
+visualisation permettant de représenter l’empreinte écologique de quelques universités et cegeps,
+à commencer par l’Université de Montréal. Cette carte numérique a pour but de rendre accessible
+des données environnementales complexes à un plus large public (étudiants, chercheurs,
+citoyens).
 
 ### Contexte
+Ce projet vise à établir un suivi clair et concret des initiatives mises en place par les universités dans le cadre de leur engagement écologique pour la période 2024-2029. Il s’inscrit dans un effort collectif lié au plan stratégique visant à atteindre la carboneutralité d’ici 2040.
 
 ### Problématique ou motivations
+
 
 ### Proposition et objectifs
 
