@@ -9,7 +9,7 @@ function App() {
   return (
     <div>
       <h1>Carte interactive</h1>
-      <Map />
+      <Map/>
     </div>
   );
 }
