@@ -1,0 +1,13 @@
+CREATE TABLE building (id_building SERIAL NOT NULL, institution int4 NOT NULL, position varchar(255), adress varchar(255), CONSTRAINT id_pavillon PRIMARY KEY (id_building));
+CREATE TABLE metric_stars (id_metric SERIAL NOT NULL, name varchar(255), id_parent int4, description varchar(255), category varchar(255), PRIMARY KEY (id_metric));
+CREATE TABLE ratios (id_ratio SERIAL NOT NULL, name varchar(255), metric2 int4 NOT NULL, metric1 int4 NOT NULL, description varchar(255), PRIMARY KEY (id_ratio));
+CREATE TABLE ratio_values (id_institution int4 NOT NULL, id_ratio int4 NOT NULL, year int4 NOT NULL, value float4, PRIMARY KEY (id_institution, id_ratio));
+CREATE TABLE stars_values (id_institution int4 NOT NULL, id_metric int4 NOT NULL, year int4 NOT NULL, value float4, PRIMARY KEY (id_institution, id_metric));
+CREATE TABLE collected_metrics (id_metric SERIAL NOT NULL, name varchar(255), unit varchar(255), category varchar(255), description varchar(255), PRIMARY KEY (id_metric));
+CREATE TABLE data_collection (id_file SERIAL NOT NULL, file_link varchar(255), title varchar(255), id_institution int4, "date" int4, used_method varchar(255), responsable varchar(255), notes varchar(255), PRIMARY KEY (id_file));
+ALTER TABLE ratio_values ADD CONSTRAINT FKratio_valu629057 FOREIGN KEY (id_institution) REFERENCES institution (id_instituion);
+ALTER TABLE ratio_values ADD CONSTRAINT FKratio_valu197767 FOREIGN KEY (id_ratio) REFERENCES ratios (id_ratio);
+ALTER TABLE stars_values ADD CONSTRAINT FKstars_valu248467 FOREIGN KEY (id_institution) REFERENCES institution (id_instituion);
+ALTER TABLE stars_values ADD CONSTRAINT FKstars_valu887420 FOREIGN KEY (id_metric) REFERENCES metric_stars (id_metric);
+ALTER TABLE ratios ADD CONSTRAINT FKratios435550 FOREIGN KEY (metric2) REFERENCES collected_metrics (id_metric);
+ALTER TABLE ratios ADD CONSTRAINT FKratios435551 FOREIGN KEY (metric1) REFERENCES collected_metrics (id_metric);
