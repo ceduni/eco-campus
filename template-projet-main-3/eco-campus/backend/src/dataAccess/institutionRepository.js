@@ -1,6 +1,6 @@
 import supabase from '../../supabaseClient.js';
 
-export async function getInstitutionData() {
+export async function getInstitutionData() {  
   const { data, error } = await supabase
     .from('ratio_values')
     .select(`
@@ -10,6 +10,7 @@ export async function getInstitutionData() {
       year
     `)
     .eq('year', 2025); 
+    
   if (error) {
     throw new Error('Erreur lors de la récupération des données: ' + error.message);
   }
