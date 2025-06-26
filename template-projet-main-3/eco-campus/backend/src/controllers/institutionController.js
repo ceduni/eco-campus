@@ -1,6 +1,7 @@
-import { calculateGlobalScores } from '../services/CalculationServices.js';
+import { calculateGlobalScores, calculateGlobalScoresPerso } from '../services/CalculationServices.js';
 import { getInstitutionData } from '../dataAccess/institutionRepository.js';
 import { getStars } from '../dataAccess/institutionRepository.js';
+import { raw } from 'express';
 
 // fonction pour le score global
 export async function getGlobalScores(req, res) {
@@ -26,10 +27,13 @@ export async function getStarsScore(req, res) {
 // fonction pour le score global avec poid alpha personnalise 
 export async function getGlobalScoresPerso(req, res) {
   try {
+    console.log('Reçu: bpdy', req.body);
     const alphas = req.body.alphas || {}; 
     const rawData = await getInstitutionData();               // prendre les donnees de la table (req sql)  
-  // const scores =  calculateGlobalScoresPerso(rawData, alphas)  methode a definir pour calcul le score mais personnalise
-    res.status(200).json(rawData);                  // reponse au frontend format json (a formatter apres)    
+    console.log('Reçu: data', rawData);
+    const scores =  calculateGlobalScoresPerso(rawData, alphas); 
+    console.log('scores', scores);
+    res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)    
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur log' });
   }
