@@ -1,10 +1,13 @@
 {
-  "type": "module",
-  "name": "backend",
+ "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+     "dev": "nodemon --watch ./ --ext ts --exec ts-node ./server.ts"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +18,5 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
   }
 }

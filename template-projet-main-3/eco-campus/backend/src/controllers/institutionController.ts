@@ -1,10 +1,16 @@
-import { calculateGlobalScores, calculateGlobalScoresPerso } from '../services/CalculationServices.js';
-import { getInstitutionData } from '../dataAccess/institutionRepository.js';
-import { getStars } from '../dataAccess/institutionRepository.js';
-import { raw } from 'express';
+/* import { calculateGlobalScores, calculateGlobalScoresPerso } from '../services/CalculationServices';
+import { getInstitutionData } from '../dataAccess/institutionRepository';
+import { getStars } from '../dataAccess/institutionRepository';
+import { Request, Response } from 'express';
+ */
+
+import { calculateGlobalScores} from '../services/CalculationServices';
+import { getInstitutionData } from '../dataAccess/institutionRepository';
+import { getStars } from '../dataAccess/institutionRepository';
+import { Request, Response } from 'express';
 
 // fonction pour le score global
-export async function getGlobalScores(req, res) {
+export async function getGlobalScores(req : Request, res : Response) {
   try {
     const rawData = await getInstitutionData();    // prendre les donnees de la table (req sql)    
     const scores = calculateGlobalScores(rawData); // envoyer les donnees vers la fonction de calcul       
@@ -15,7 +21,7 @@ export async function getGlobalScores(req, res) {
 }
 
 // fonction pour le score stars
-export async function getStarsScore(req, res) {
+ export async function getStarsScore(req : Request, res : Response) {
   try {
     const rawData = await getStars();               // prendre les donnees de la table (req sql)     
     res.status(200).json(rawData);                  // reponse au frontend format json (a formatter apres)    
@@ -24,8 +30,9 @@ export async function getStarsScore(req, res) {
   }
 }
 
-// fonction pour le score global avec poid alpha personnalise 
-export async function getGlobalScoresPerso(req, res) {
+/* 
+fonction pour le score global avec poid alpha personnalise 
+export async function getGlobalScoresPerso(req : Request, res : Response) {
   try {
     console.log('Reçu: bpdy', req.body);
     const alphas = req.body.alphas || {}; 
@@ -40,3 +47,4 @@ export async function getGlobalScoresPerso(req, res) {
 }
 
 
+ */

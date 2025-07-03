@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'; // a voir pour la securite 
-import institutionRoutes from './src/routes/institutionRoutes.js';
+import institutionRoutes from './src/routes/institutionRoutes';
 
 
 const app = express();

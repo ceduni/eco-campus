@@ -1,6 +1,7 @@
 import express from 'express';
-import { getGlobalScores, getStarsScore, getGlobalScoresPerso } from '../controllers/institutionController.js';
-import supabase from '../../supabaseClient.js';
+//import { getGlobalScores, getStarsScore, getGlobalScoresPerso } from '../controllers/institutionController';
+import { getGlobalScores, getStarsScore} from '../controllers/institutionController';
+import supabase from '../supabaseClient';
 
 
 const router = express.Router();
@@ -13,6 +14,6 @@ router.get('/scores', getGlobalScores);
 // route pour obtenir score stars
 router.get('/stars', getStarsScore);
 
-router.post('/scorespersonnalise', getGlobalScoresPerso);
+//router.post('/scorespersonnalise', getGlobalScoresPerso);
 
 export default router;
