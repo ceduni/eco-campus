@@ -16,7 +16,7 @@ export async function getGlobalScores(req : Request, res : Response) {
     const scores = calculateGlobalScores(rawData); // envoyer les donnees vers la fonction de calcul       
     res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)    
   } catch (err) {
-    res.status(500).json({ error: 'Erreur serveur log' });
+    res.status(500).json({ error: err.message });
   }
 }
 
