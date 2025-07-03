@@ -6,7 +6,7 @@ export function calculateGlobalScores(data: institutionData[]) {
   for (let i = 0; i < data.length; i++) {
     const institution = data[i];
     const id = institution.id_institution;
-    const ratios = institution.ratios;
+    const ratios = institution.ratios_values;
     const values = Object.values(ratios); 
     
     let total = 0;

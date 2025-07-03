@@ -2,7 +2,8 @@
  "name": "backend",
   "version": "1.0.0",
   "scripts": {
-     "dev": "nodemon --watch ./ --ext ts --exec ts-node ./server.ts"
+     "dev": "nodemon --watch ./ --ext ts --exec ts-node ./server.ts",
+     "dev:test": "ts-node src/test/test.ts"
   },
   "devDependencies": {
     "nodemon": "^3.0.0",
