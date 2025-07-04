@@ -1,50 +1,39 @@
 import { institutionData } from '../models/institutionData';
+import { Alphas } from '../models/Alphas';
 
-export function calculateGlobalScores(data: institutionData[]) {
+export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
   const results: { id_institution: string; score: number }[] = [];
+
+  const coeffRatio = alphas.getCoeffRatio();
+  const coeffOp = alphas.getCoeffOp();
 
   for (let i = 0; i < data.length; i++) {
     const institution = data[i];
-    const id = institution.id_institution;
-    const ratios = institution.ratios_values;
-    const values = Object.values(ratios); 
-    
+    const id = institution.getIdInstitution();
+
+    const ratios = institution.getRatiosValues();
+    const ops = institution.getOpValues();
+
     let total = 0;
-    for (let j = 0; j < values.length; j++) {
-      total += values[j];
+
+    for (const [ratioId, value] of Object.entries(ratios)) {
+      const alpha = coeffRatio.get(ratioId) ?? 1; 
+      total += value * alpha;
     }
+
+    for (const [opId, value] of Object.entries(ops)) {
+      const alpha = coeffOp.get(opId) ?? 1;
+      total += value * alpha;
+    }
+
     results.push({
       id_institution: id,
-      score: total
+      score: total * 100
     });
   }
+
   return results;
 }
 
 
-// fusionner les 2 fcts !!!!! 
-// Reçu: { alphas: { '1': 2, '2': 1.5 } }
-//Reçu: { '1': { '1': 15, '2': 40 }, '2': { '1': 20 } }
-/* export function calculateGlobalScoresPerso(data, alphas = {}) {
-  //const results = [];
-  const results: { id_institution: string; score: number }[] = [];
-
-  for (const idInstitution in data) {
-    const ratios = data[idInstitution];
-    let score = 0;
-
-    for (const idRatio in ratios) {
-      const value = ratios[idRatio];
-      const alpha = alphas[idRatio] ?? 1;
-      score += value * alpha;
-    }
-
-    results.push({
-      id_institution: idInstitution,
-      score: score
-    });
-  }
-
-  return results;
-} */
 

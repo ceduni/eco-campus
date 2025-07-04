@@ -1,22 +1,29 @@
 export class Alphas {
-  private coeff: Map<string, number>;
+  private coeff_ratio: Map<string, number>;
+  private coeff_op: Map<string, number>;
 
   // constructeur : prendre les ratios de la table ratios 
-  private constructor(weights: Map<string, number>) {
-    this.coeff = weights;
+  private constructor(coeff_ratio: Map<string, number>,coeff_op: Map<string, number>) {
+    this.coeff_ratio = coeff_ratio;
+    this.coeff_op = coeff_op;
   }
 
   //ajouter validation du format 
 
-  getAlpha(id_ratio: string): number {
-    return this.coeff.get(id_ratio) ?? 1;
+  
+  public getCoeffRatio(): Map<string, number> {
+    return this.coeff_ratio;
   }
 
-  updateAlpha(id_ratio: string, newValue: number): void {
-    this.coeff.set(id_ratio, newValue);
+  public setCoeffRatio(value: Map<string, number>): void {
+    this.coeff_ratio = value;
   }
 
-  getAll(): Map<string, number> {
-    return this.coeff;
+  public getCoeffOp(): Map<string, number> {
+    return this.coeff_op;
+  }
+
+  public setCoeffOp(value: Map<string, number>): void {
+    this.coeff_op = value;
   }
 }
