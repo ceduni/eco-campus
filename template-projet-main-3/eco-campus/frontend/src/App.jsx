@@ -1,16 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-import Map from './components/Map';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import MapPage from './pages/MapPage';
 
 function App() {
   return (
-    <div>
-      <h1>Carte interactive</h1>
-      <Map/>
-    </div>
+    <Router>
+      <nav>
+        <Link to="/map">Aller à la map</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<h1>Bienvenue</h1>} />
+        <Route path="/map" element={<MapPage />} />
+      </Routes>
+    </Router>
   );
 }
 
