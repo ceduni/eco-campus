@@ -1,0 +1,71 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  flex : 1;
+}
+
+.slider {
+  flex: 1;
+  max-width: 70px; 
+}
+
+.input {
+  width: 55px;
+  height: 50px;
+  text-align: center;         
+  display: flex;
+  align-items: center;        
+  justify-content: center;  
+}
+
+.metricHeader {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin: 10px;
+}
+
+
+.metricPanel {
+  position: absolute;
+  top: 150px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  width: 420px;
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Anton', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+
+.metricPanelHeader {
+  padding: 16px 20px 0 20px;
+  font-size: 24px;
+  font-weight: bold;
+  flex-shrink: 0;
+  align-items: center;        
+  justify-content: center; 
+  text-align: center;  
+}
+
+
+.metricPanelContent {
+  padding: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.metricPanelFooter{
+   display: flex; 
+   padding: 10px; 
+   align-items: center;        
+   justify-content: center; 
+}
