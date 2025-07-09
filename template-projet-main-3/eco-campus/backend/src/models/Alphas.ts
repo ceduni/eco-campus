@@ -10,6 +10,16 @@ export class Alphas {
 
   //ajouter validation du format 
 
+  // factory method  NOT SUREEEE
+  public static createFromRaw(raw: {
+    coeff_ratio: Record<string, number>,
+    coeff_op: Record<string, number>
+  }): Alphas {
+    const ratioMap = new Map<string, number>(Object.entries(raw.coeff_ratio));
+    const opMap = new Map<string, number>(Object.entries(raw.coeff_op));
+    return new Alphas(ratioMap, opMap);
+  }
+
   
   public getCoeffRatio(): Map<string, number> {
     return this.coeff_ratio;
