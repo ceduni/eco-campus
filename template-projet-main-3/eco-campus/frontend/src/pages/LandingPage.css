@@ -6,6 +6,7 @@
 }
 
 
+
 .map {
   position: absolute;
   top: 0;
@@ -14,6 +15,7 @@
   height: 100%;
   z-index: 0;
 }
+
 
 header {
   position: absolute;
@@ -35,4 +37,6 @@ header {
   bottom: 20px;
   right: 20px;
   z-index: 10;
+
 }
+
