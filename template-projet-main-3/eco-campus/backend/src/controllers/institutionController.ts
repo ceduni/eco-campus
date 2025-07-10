@@ -1,12 +1,16 @@
 import { calculateGlobalScores} from '../services/CalculationServices';
 import {  getCompleteInstitutionData } from '../dataAccess/institutionRepository';
 import { Request, Response } from 'express';
+import {Alphas} from '../models/Alphas';
 
 // fonction pour le score global a ajuster en post ??? 
 export async function getGlobalScores(req : Request, res : Response) {
   try {
+    console.log('BODY', req.body)
     const rawData = await getCompleteInstitutionData();    // prendre les donnees de la table (req sql)    
-    const scores = calculateGlobalScores(rawData, req.body); // envoyer les donnees vers la fonction de calcul       
+    console.log(rawData);
+    const alphas = Alphas.fromJSON(req.body);
+    const scores = calculateGlobalScores(rawData, alphas); // envoyer les donnees vers la fonction de calcul       
     res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)    
   } catch (err) {
     res.status(500).json({ error: 'Erreur getGlobalScores' });
