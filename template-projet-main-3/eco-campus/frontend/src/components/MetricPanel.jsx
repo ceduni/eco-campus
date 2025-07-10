@@ -1,8 +1,9 @@
 import React from 'react';
-import { useState } from 'react';
 import { NumberInput, Slider } from '@mantine/core';
 import './Filtre.css';
 import { CustomButton } from '../widgets/Button';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 
 
@@ -27,7 +28,7 @@ export function SliderInput() {
         min={0}
         max={1}
         hideControls
-      />
+      /> 
     </div>
   );
 }
@@ -42,55 +43,46 @@ export function MetricHeader({title}){
   );
 }
 
-export function MetricPanel(){
-    return (
+export function MetricPanel() {
+  const [ratios, setRatios] = useState([]);
+  const [metricStars, setMetricStars] = useState([]);
+
+  useEffect(() => {
+    Promise.all([
+      axios.get('http://localhost:3001/ratios'),
+      axios.get('http://localhost:3001/starsmetric'),
+    ])
+      .then(([resRatios, resMetrics]) => {
+        setRatios(resRatios.data);
+        setMetricStars(resMetrics.data);
+        console.log(metricStars);
+      })
+      .catch((err) => console.error('Erreur fetch des données :', err));
+  }, []);
+
+  return (
     <div className="metricPanel">
-      <h2 className="metricPanelHeader">MÉTRIQUES</h2>    
-    <div className='metricPanelContent'> 
-      <MetricHeader
-        title="OP1"
-      />
-      <MetricHeader
-        title="OP2"
-      />
-      <MetricHeader
-        title="OP3"
-      />
-      <MetricHeader
-        title="OP4"
-      />
-      <MetricHeader
-        title="OP5"
-      />
-      <MetricHeader
-        title="OP6"
-      />
-      <MetricHeader
-        title="OP7"
-      />
-      <MetricHeader
-        title="OP8"
-      />
-      <MetricHeader
-        title="Ratio 1"
-      />
-      <MetricHeader
-        title="Ratio 2"
-      />
-      <MetricHeader
-        title="Ratio 3"
-      />
-      <MetricHeader
-        title="Ratio 4"
-      />
-      <MetricHeader
-        title="Ratio 5"
-      />
+      <h2 className="metricPanelHeader">MÉTRIQUES</h2>
+
+      <div className="metricPanelContent">
+        {metricStars.map((metric) => (
+          <MetricHeader
+            key={`metric-${metric.id_metric}`}
+            title={metric.id_metric}
+          />
+        ))}
+
+        {ratios.map((ratio) => (
+          <MetricHeader
+            key={`ratio-${ratio.id_ratios}`}
+            title={ratio.id_ratios}
+          />
+        ))}
+      </div>
+
+      <div className="metricPanelFooter">
+        <CustomButton text="Appliquer" />
+      </div>
     </div>
-    <div  className='metricPanelFooter'>
-    <CustomButton
-    text="Appliquer"/>
-    </div>
-  </div>
   );
 }

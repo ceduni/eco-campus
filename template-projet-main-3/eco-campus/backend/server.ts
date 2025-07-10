@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'; // a voir pour la securite 
 import institutionRoutes from './src/routes/institutionRoutes';
+import ratiosRoutes from './src/routes/ratiosRoutes';
+import starsRouter from './src/routes/starsRouter';
 
 
 const app = express();
@@ -12,6 +14,9 @@ app.use(express.json());
 // Route pour que l'api se branche a insitutionRoutes.. voir la suite dans insitutionRoute
 app.use('/', institutionRoutes);
 
+app.use('/ratios', ratiosRoutes);
+
+app.use('/starsmetric', starsRouter);
 
 // Lancer le serveur
 const PORT = process.env.PORT || 3001;

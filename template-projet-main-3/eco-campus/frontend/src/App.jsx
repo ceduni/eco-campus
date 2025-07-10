@@ -1,10 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import MapPage from './pages/MapPage';
 import LandingPage from './pages/LandingPage';
+import ComponentTesting from './pages/ComponentTesting';
 
 function App() {
-  return <LandingPage />;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/test" element={<ComponentTesting />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
