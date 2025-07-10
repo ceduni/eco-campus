@@ -60,8 +60,8 @@ export function MetricPanel() {
   
   const handleApply = async () => {
     const alphas = {
-      coeff_ratio: coeffRatios,
-      coeff_op: coeffOps,
+      coeff_ratio: coeffOps,   
+      coeff_op: coeffRatios 
     };
     console.log('metricPanel',coeffOps, coeffRatios)
 

@@ -17,9 +17,6 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
 
     let total = 0;
 
-    console.log("COEFF RATIO :", coeffRatio);
-    console.log("COEFF OP :", coeffOp);
-    console.log("DATA institutions :", data); 
     for (const [ratioId, value] of Object.entries(ratios)) {
       const alpha = coeffRatio.get(ratioId) ?? 1;
       total += value * alpha;
