@@ -5,7 +5,7 @@ import {Alphas} from '../models/Alphas';
 
 // fonction pour le score global a ajuster en post ??? 
 export async function getGlobalScores(req : Request, res : Response) {
-  try {
+  try { 
     console.log('BODY', req.body)
     const rawData = await getCompleteInstitutionData();    // prendre les donnees de la table (req sql)    
     console.log(rawData);

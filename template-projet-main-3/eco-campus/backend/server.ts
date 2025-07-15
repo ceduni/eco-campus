@@ -4,6 +4,7 @@ import 'dotenv/config'; // a voir pour la securite
 import institutionRoutes from './src/routes/institutionRoutes';
 import ratiosRoutes from './src/routes/ratiosRoutes';
 import starsRouter from './src/routes/starsRouter';
+import markerRouter from './src/routes/markerRouter'
 
 
 const app = express();
@@ -17,6 +18,8 @@ app.use('/', institutionRoutes);
 app.use('/ratios', ratiosRoutes);
 
 app.use('/starsmetric', starsRouter);
+
+app.use('/markers', markerRouter);
 
 // Lancer le serveur
 const PORT = process.env.PORT || 3001;

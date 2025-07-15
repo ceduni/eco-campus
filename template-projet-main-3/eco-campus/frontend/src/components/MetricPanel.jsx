@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NumberInput, Slider } from '@mantine/core';
 import './Filtre.css';
 import { CustomButton } from '../widgets/Button';
+import { Score } from './Score';
 import axios from 'axios';
 
 
@@ -44,6 +45,7 @@ export function MetricPanel() {
   const [metricStars, setMetricStars] = useState([]);
   const [coeffRatios, setCoeffRatios] = useState({});
   const [coeffOps, setCoeffOps] = useState({});
+  const [scores, setScores] = useState([]);
 
   useEffect(() => {
     Promise.all([
@@ -68,6 +70,7 @@ export function MetricPanel() {
     try {
       const res = await axios.post('http://localhost:3001/scores', alphas);
       console.log('Retour:', res.data);
+      setScores(res.data);
     } catch (err) {
       console.error('Erreur Alphas:', err);
     }
@@ -101,8 +104,9 @@ export function MetricPanel() {
         ))}
       </div>
 
-      <div className="metricPanelFooter">
-        <CustomButton text="Appliquer" onClick={handleApply} />
+        <div className="metricPanelFooter">
+          <CustomButton text="Appliquer" onClick={handleApply} />
+          <ScoreDisplay scores={scores} />
       </div>
     </div>
   );

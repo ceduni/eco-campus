@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React from 'react';
+import axios from 'axios';
 
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
@@ -20,6 +21,23 @@ export default function Map() {
       zoom: 10,
     });
   }, []);
+
+  // prendre dynamiquement les markers de la table institution 
+  // REVOIR !!!! 
+ /*  axios.get('http://localhost:3001/markers')
+      .then((res) => {
+        const markers = res.data;
+
+        markers.forEach((marker) => {
+          new mapboxgl.Marker({ color: marker.color || 'red' })
+            .setLngLat([marker.lng, marker.lat])
+            .addTo(mapRef.current);
+        });
+      })
+      .catch((err) => {
+        console.error('Erreur lors du fetch des markers :', err);
+      }); */
+
 
   return (
     <div>

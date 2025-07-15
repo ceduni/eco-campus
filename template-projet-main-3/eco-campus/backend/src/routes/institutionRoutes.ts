@@ -14,6 +14,6 @@ router.post('/scores', getGlobalScores);
 // route pour obtenir score stars
 router.get('/stars', getStarsScore);
 
-//router.post('/scorespersonnalise', getGlobalScoresPerso);
+
 
 export default router;
