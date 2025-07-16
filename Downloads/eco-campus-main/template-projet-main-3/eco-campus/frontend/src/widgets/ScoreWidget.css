@@ -1,0 +1,61 @@
+.score-circle-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.score-circle-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.circle-label-text {
+  font-size: 10px;
+  fill: black;
+  font-weight: bold;
+}
+
+.circle-outer {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: white;
+  border: 0.5px solid black; /* thin black stroke */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.circle-inner {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-inner.gold {
+  background-color: #e6ba09;
+}
+
+.circle-inner.silver {
+  background-color: #a5a6a9;
+}
+
+.circle-inner.bronze {
+  background-color: #a46217;
+}
+
+.circle-number {
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+}
