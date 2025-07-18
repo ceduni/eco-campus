@@ -5,7 +5,7 @@ import "./ScoreWidget.css";
 export default function ScoreCircle({ score, label, tier = "gold" }) {
   return (
     <div className="score-circle-wrapper">
-      {/* Curved text */}
+      {/* Curved text, kinda don't like how it's done, gonna modify it*/}
       <svg className="score-circle-svg" viewBox="0 0 100 100">
         <defs>
           <path
@@ -21,9 +21,9 @@ export default function ScoreCircle({ score, label, tier = "gold" }) {
         </text>
       </svg>
 
-      {/* Outer white ring with stroke */}
+      {/* White circle */}
       <div className="circle-outer">
-        {/* Inner colored circle */}
+        {/* Colored circle */}
         <div className={`circle-inner ${tier}`}>
           <div className="circle-number">{score}</div>
         </div>

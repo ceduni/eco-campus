@@ -1,0 +1,34 @@
+
+.score-bar-container {
+  height: 8px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0 4px;
+  flex: 1;
+}
+
+.score-bar-fill {
+  height: 8px;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.score-bar-fill.low {
+  background-color: #ca0909;
+}
+
+.score-bar-fill.medium {
+  background-color: #f6c503;
+}
+
+.score-bar-fill.high {
+  background-color: #15a84b;
+}
+
+.score-value {
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+}

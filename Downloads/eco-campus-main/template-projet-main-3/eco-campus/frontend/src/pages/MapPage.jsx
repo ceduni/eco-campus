@@ -1,13 +1,17 @@
-import Map from '../components/Map';
-import React from 'react';
-import { SliderInput } from '../components/MetricPanel';
-import { MetricPanel } from '../components/MetricPanel';
-import UniversityPanel from '../components/UniversityPanel'; 
+import React, { useState } from 'react';
+import UniversityPanel from '../components/UniversityPanel';
+import ScoreDetailPanel from '../components/ScoreDetailPanel';
 
-export function MapPage() {
+function MapPage() {
+  const [activeScore, setActiveScore] = useState(null); // { id, score, outOf, description }
+
   return (
     <div>
-      <UniversityPanel />
+      {activeScore ? (
+        <ScoreDetailPanel data={activeScore} onBack={() => setActiveScore(null)} />
+      ) : (
+        <UniversityPanel onScoreClick={setActiveScore} />
+      )}
     </div>
   );
 }

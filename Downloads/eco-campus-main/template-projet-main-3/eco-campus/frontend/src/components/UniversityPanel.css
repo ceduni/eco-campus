@@ -1,15 +1,15 @@
 .panel-container {
-  background-color: rgba(255, 255, 255, 0.6); /* white at 60% opacity */
-  border: 1px solid rgba(0, 0, 0, 0.1);       /* light border */
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 2px;
-  max-width: 420px; 
+  max-width: 420px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
 }
 
 .university-panel {
   padding: 16px;
-  max-width: 420px;
   background-color: #fff;
   border-radius: 8px;
 }
@@ -34,8 +34,6 @@
   align-items: center;
 }
 
-
-
 .score-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -50,15 +48,16 @@
   align-items: center;
   gap: 8px;
   height: 48px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .score-box.op {
-  background-color: #dbeafe; /* light blue */
+  background-color: #dbeafe;
 }
 
 .score-box.ratio {
-  background-color: #fef08a; /* light yellow */
+  background-color: #fef08a;
 }
 
 .score-id {
@@ -68,53 +67,11 @@
   text-decoration: underline;
 }
 
-.score-bar-container {
-  flex: 1;
-  height: 8px;
-  background-color: white;
-  border-radius: 5px;
-  margin: 0 4px;
-}
-
-.score-bar-fill {
-  height: 8px;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.score-bar-fill.low {
-  background-color: #ca0909; 
-}
-
-.score-bar-fill.medium {
-  background-color: #f6c503; 
-}
-
-.score-bar-fill.high {
-  background-color: #15a84b; 
-}
-
-.score-value {
-  font-size: 0.75rem;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 .score-section {
-  background-color: #f9fafb; /* very light grey */
+  background-color: #f9fafb;
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
-}
-
-
-
-.score-section-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap; /* handles overflow on small screens */
 }
 
 .score-section-title {
@@ -132,11 +89,10 @@
 }
 
 .university-panel-scrollable {
-  max-height: 100vh;           
+  max-height: 100vh;
   overflow-y: auto;
-  padding-right: 4px;        
+  padding-right: 4px;
 }
-
 
 .university-panel-scrollable::-webkit-scrollbar {
   width: 4px;
