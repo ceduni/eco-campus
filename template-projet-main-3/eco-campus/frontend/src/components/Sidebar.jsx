@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './Sidebar.module.css';
+
 import { MetricPanel } from './MetricPanel';
 
 const Sidebar = ({ mapInstance }) => {
@@ -20,7 +21,9 @@ const Sidebar = ({ mapInstance }) => {
 
       {showMetricPanel && <MetricPanel mapInstance={mapInstance} />}
     </div>
+
   );
 };
 
 export default Sidebar;
+
