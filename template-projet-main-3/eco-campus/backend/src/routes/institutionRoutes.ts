@@ -15,7 +15,7 @@ router.post('/scores', getGlobalScores);
 // route pour obtenir score stars
 router.get('/stars', getStarsScore);
 
-//router.post('/scorespersonnalise', getGlobalScoresPerso);
+
 
 
 //route pour obtenir le score de l'uni par id (une seule uni)

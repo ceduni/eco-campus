@@ -1,20 +1,18 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NumberInput, Slider } from '@mantine/core';
 import './Filtre.css';
 import { CustomButton } from '../widgets/Button';
+import { ScoreDisplay } from './ScoreDisplay';
+import axios from 'axios';
 
 
-
-export function SliderInput() {
-  const [value, setValue] = useState(1);
-
+export function SliderInput({ value, onChange }) {
   return (
     <div className='wrapper'>
       <Slider
         className='slider'
         value={value}
-        onChange={setValue}
+        onChange={onChange}
         min={0}
         max={1}
         step={0.01}
@@ -22,75 +20,95 @@ export function SliderInput() {
       <NumberInput 
         className='input'
         value={value}
-        onChange={setValue}
+        onChange={onChange}
         step={0.01}
         min={0}
         max={1}
         hideControls
-      />
+      /> 
     </div>
   );
 }
 
 
-export function MetricHeader({title}){
-   return (
+export function MetricHeader({ title, value, onChange }) {
+  return (
     <div className='metricHeader'>
       <p>{title}</p>
-      <SliderInput/>
+      <SliderInput value={value} onChange={onChange} />
     </div>
   );
 }
 
-export function MetricPanel(){
-    return (
+export function MetricPanel({ mapInstance }) {
+  const [ratios, setRatios] = useState([]);
+  const [metricStars, setMetricStars] = useState([]);
+  const [coeffRatios, setCoeffRatios] = useState({});
+  const [coeffOps, setCoeffOps] = useState({});
+  const [scores, setScores] = useState([]);
+
+
+  useEffect(() => {
+    Promise.all([
+      axios.get('http://localhost:3001/ratios'),
+      axios.get('http://localhost:3001/starsmetric'),
+    ])
+      .then(([resRatios, resMetrics]) => {
+        setRatios(resRatios.data);
+        setMetricStars(resMetrics.data);
+      })
+      .catch((err) => console.error('Erreur fetch des données :', err));
+  }, []);
+
+  
+  const handleApply = async () => {
+    const alphas = {
+      coeff_ratio: coeffOps,   
+      coeff_op: coeffRatios 
+    };
+    console.log('metricPanel',coeffOps, coeffRatios)
+
+    try {
+      const res = await axios.post('http://localhost:3001/scores', alphas);
+      console.log('Retour:', res.data);
+      setScores(res.data);
+    } catch (err) {
+      console.error('Erreur Alphas:', err);
+    }
+  };
+
+  return (
     <div className="metricPanel">
-      <h2 className="metricPanelHeader">MÉTRIQUES</h2>    
-    <div className='metricPanelContent'> 
-      <MetricHeader
-        title="OP1"
-      />
-      <MetricHeader
-        title="OP2"
-      />
-      <MetricHeader
-        title="OP3"
-      />
-      <MetricHeader
-        title="OP4"
-      />
-      <MetricHeader
-        title="OP5"
-      />
-      <MetricHeader
-        title="OP6"
-      />
-      <MetricHeader
-        title="OP7"
-      />
-      <MetricHeader
-        title="OP8"
-      />
-      <MetricHeader
-        title="Ratio 1"
-      />
-      <MetricHeader
-        title="Ratio 2"
-      />
-      <MetricHeader
-        title="Ratio 3"
-      />
-      <MetricHeader
-        title="Ratio 4"
-      />
-      <MetricHeader
-        title="Ratio 5"
-      />
+      <h2 className="metricPanelHeader">MÉTRIQUES</h2>
+
+      <div className="metricPanelContent">
+        {metricStars.map((metric) => (
+          <MetricHeader
+            key={`metric-${metric.id_metric}`}
+            title={metric.id_metric}
+            value={coeffRatios [metric.id_metric] ?? 1}
+            onChange={(val) =>
+              setCoeffRatios ((prev) => ({ ...prev, [metric.id_metric]: val }))
+            }
+          />
+        ))}
+
+        {ratios.map((ratio) => (
+          <MetricHeader
+            key={`ratio-${ratio.id_ratios}`}
+            title={ratio.id_ratios}
+            value={coeffOps[ratio.id_ratios] ?? 1}
+            onChange={(val) =>
+              setCoeffOps((prev) => ({ ...prev, [ratio.id_ratios]: val }))
+            }
+          />
+        ))}
+      </div>
+
+        <div className="metricPanelFooter">
+          <CustomButton text="Appliquer" onClick={handleApply} />
+          <ScoreDisplay scores={scores} mapInstance={mapInstance} />
+      </div>
     </div>
-    <div  className='metricPanelFooter'>
-    <CustomButton
-    text="Appliquer"/>
-    </div>
-  </div>
   );
 }

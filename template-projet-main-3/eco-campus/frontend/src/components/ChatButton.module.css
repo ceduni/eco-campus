@@ -4,12 +4,12 @@
   right: 85px;
   width: 90px;
   height: 90px;
-  background-color: #F27E1E; /* orange */
+  background-color: #F27E1E; 
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* drop shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
   cursor: pointer;
   z-index: 1002;
 }
