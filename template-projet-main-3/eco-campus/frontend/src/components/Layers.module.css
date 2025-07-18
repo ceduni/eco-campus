@@ -69,5 +69,31 @@
   justify-content: center;
 }
 
+.iconItemWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  background-color: #fff;
+  color: black;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 11px;
+  z-index: 3000;
+  font-weight: 500;
+}
+
+.iconItemWrapper:hover .tooltip {
+  display: block;
+}
+
 
 
