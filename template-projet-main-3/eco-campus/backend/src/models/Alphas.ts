@@ -2,15 +2,23 @@ export class Alphas {
   private coeff_ratio: Map<string, number>;
   private coeff_op: Map<string, number>;
 
-  // constructeur : prendre les ratios de la table ratios 
-  private constructor(coeff_ratio: Map<string, number>,coeff_op: Map<string, number>) {
+
+  constructor(coeff_ratio: Map<string, number>,coeff_op: Map<string, number>) {
     this.coeff_ratio = coeff_ratio;
     this.coeff_op = coeff_op;
   }
 
+ public static fromJSON(obj: any): Alphas {
+  const instance = Object.create(Alphas.prototype) as Alphas;
+  instance.coeff_ratio = new Map(Object.entries(obj.coeff_ratio || {}));
+  instance.coeff_op = new Map(Object.entries(obj.coeff_op || {}));       
+  return instance;
+}
+
+
   //ajouter validation du format 
 
-  
+
   public getCoeffRatio(): Map<string, number> {
     return this.coeff_ratio;
   }

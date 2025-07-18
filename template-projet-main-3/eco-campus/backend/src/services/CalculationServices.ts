@@ -2,6 +2,7 @@ import { institutionData } from '../models/institutionData';
 import { Alphas } from '../models/Alphas';
 
 export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
+  type ValuesMap = { [key: string]: number };
   const results: { id_institution: string; score: number }[] = [];
 
   const coeffRatio = alphas.getCoeffRatio();
@@ -9,15 +10,15 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
 
   for (let i = 0; i < data.length; i++) {
     const institution = data[i];
-    const id = institution.getIdInstitution();
+    const id = institution.id_institution;
 
-    const ratios = institution.getRatiosValues();
-    const ops = institution.getOpValues();
+    const ratios: ValuesMap = institution.ratios_values;
+    const ops: ValuesMap = institution.op_values;
 
     let total = 0;
 
     for (const [ratioId, value] of Object.entries(ratios)) {
-      const alpha = coeffRatio.get(ratioId) ?? 1; 
+      const alpha = coeffRatio.get(ratioId) ?? 1;
       total += value * alpha;
     }
 
@@ -27,13 +28,10 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
     }
 
     results.push({
-      id_institution: id,
-      score: total * 100
+      id_institution: id.toString(),
+      score: total * 10
     });
   }
 
   return results;
 }
-
-
-

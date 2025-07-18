@@ -1,11 +1,11 @@
 .sidebar {
   position: absolute;
-  top: 241px;
+  top: 150px;
   left: 70px;
   display: flex;
   flex-direction: column;
   gap: 30px;
-  z-index: 1001; /* augmenté */
+  z-index: 1001;
 }
 
 
@@ -14,6 +14,6 @@
   border: none;
   padding: 0;
   outline: none;
-  box-shadow: none; /* ajoute cette ligne */
+  box-shadow: none; 
   cursor: pointer;
 }
