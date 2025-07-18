@@ -26,3 +26,22 @@ export async function fetchAllStarsMetrics(): Promise<Stars[]> {
 
   return starsList;
 }
+
+
+export async function fetchAllStarsFinalResults(): Promise<any[]> {
+  const { data, error } = await supabase
+    .from('stars_final_results')
+    .select('id_institution, score, rating');
+
+  if (error) {
+    throw new Error("Erreur lors de la récupération des scores: " + error.message);
+  }
+
+  if (!data) return [];
+
+  return data.map((row) => ({
+    id_institution: row.id_institution.toString(),
+    score: row.score,
+    rating: row.rating
+  }));
+}
