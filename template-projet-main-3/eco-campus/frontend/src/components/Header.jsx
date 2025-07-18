@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ⬅️ import du hook de navigation
+import { useNavigate } from 'react-router-dom'; 
 import styles from './Header.module.css';
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState('carte');
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const navigate = useNavigate(); // ⬅️ initialise le hook
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setShowDropdown(prev => !prev);
@@ -17,7 +17,7 @@ const Header = () => {
     setShowDropdown(false);
   };
 
-  // ⬅️ Gère le clic sur un bouton d'onglet
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (tab === 'carte') {
