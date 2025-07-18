@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './Sidebar.module.css';
 import { MetricPanel } from './MetricPanel';
 
-const Sidebar = () => {
+const Sidebar = ({ mapInstance }) => {
   const [showMetricPanel, setShowMetricPanel] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ const Sidebar = () => {
         <img src="src/assets/filter button.svg" alt="Filter" />
       </button>
 
-      {showMetricPanel && <MetricPanel />}
+      {showMetricPanel && <MetricPanel mapInstance={mapInstance} />}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NumberInput, Slider } from '@mantine/core';
 import './Filtre.css';
 import { CustomButton } from '../widgets/Button';
-import { Score } from './Score';
+import { ScoreDisplay } from './ScoreDisplay';
 import axios from 'axios';
 
 
@@ -40,12 +40,13 @@ export function MetricHeader({ title, value, onChange }) {
   );
 }
 
-export function MetricPanel() {
+export function MetricPanel({ mapInstance }) {
   const [ratios, setRatios] = useState([]);
   const [metricStars, setMetricStars] = useState([]);
   const [coeffRatios, setCoeffRatios] = useState({});
   const [coeffOps, setCoeffOps] = useState({});
   const [scores, setScores] = useState([]);
+
 
   useEffect(() => {
     Promise.all([
@@ -106,7 +107,7 @@ export function MetricPanel() {
 
         <div className="metricPanelFooter">
           <CustomButton text="Appliquer" onClick={handleApply} />
-          <ScoreDisplay scores={scores} />
+          <ScoreDisplay scores={scores} mapInstance={mapInstance} />
       </div>
     </div>
   );
