@@ -1,0 +1,1 @@
+// cote frontend pour les comparaisons 

@@ -1,42 +1,57 @@
-import { calculateGlobalScores, calculateGlobalScoresPerso } from '../services/CalculationServices.js';
-import { getInstitutionData } from '../dataAccess/institutionRepository.js';
-import { getStars } from '../dataAccess/institutionRepository.js';
-import { raw } from 'express';
+import { calculateGlobalScores} from '../services/CalculationServices';
+import {  getCompleteInstitutionData } from '../dataAccess/institutionRepository';
+import { Request, Response } from 'express';
+import {Alphas} from '../models/Alphas';
 
-// fonction pour le score global
-export async function getGlobalScores(req, res) {
-  try {
-    const rawData = await getInstitutionData();    // prendre les donnees de la table (req sql)    
-    const scores = calculateGlobalScores(rawData); // envoyer les donnees vers la fonction de calcul       
-    res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)    
+// fonction pour le score global a ajuster en post ??? 
+export async function getGlobalScores(req : Request, res : Response) {
+  try { 
+    const rawData = await getCompleteInstitutionData();    // prendre les donnees de la table (req sql)
+    const alphas = Alphas.fromJSON(req.body);
+    const scores = calculateGlobalScores(rawData, alphas); // envoyer les donnees vers la fonction de calcul
+    res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Erreur getGlobalScores' });
   }
 }
 
 // fonction pour le score stars
-export async function getStarsScore(req, res) {
+ export async function getStarsScore(req : Request, res : Response) {
   try {
-    const rawData = await getStars();               // prendre les donnees de la table (req sql)     
-    res.status(200).json(rawData);                  // reponse au frontend format json (a formatter apres)    
-  } catch (err) {
-    res.status(500).json({ error: 'Erreur serveur log' });
-  }
-}
+    const rawData = await getCompleteInstitutionData();               // prendre les donnees de la table (req sql)
+     const starsScores = rawData.map(inst => ({
+      id_institution: inst.getIdInstitution(),
+      stars_values: inst.getStarsValues()
+    }));
 
-// fonction pour le score global avec poid alpha personnalise 
-export async function getGlobalScoresPerso(req, res) {
-  try {
-    console.log('Reçu: bpdy', req.body);
-    const alphas = req.body.alphas || {}; 
-    const rawData = await getInstitutionData();               // prendre les donnees de la table (req sql)  
-    console.log('Reçu: data', rawData);
-    const scores =  calculateGlobalScoresPerso(rawData, alphas); 
-    console.log('scores', scores);
-    res.status(200).json(scores);                  // reponse au frontend format json (a formatter apres)    
+    res.status(200).json(starsScores);                  // reponse au frontend format json (a formatter apres)
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur log' });
   }
 }
 
 
+export async function getInstitutionDataById(req: Request, res: Response) {
+  try {
+    const { id_institution, alphas } = req.body;
+
+    if (!id_institution || !alphas) {
+      return res.status(400).json({ error: 'Missing institution id or alphas' });
+    }
+
+    const rawData = await getInstitDataById(id_institution);
+
+    if (!rawData) {
+      return res.status(404).json({ error: 'Institution not found' });
+    }
+
+    const alphaObject = Alphas.createFromRaw(alphas); 
+    const score = calculateGlobalScoreById(rawData, alphaObject); 
+
+    return res.status(200).json({ id_institution, score });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Erreur get data by institution id' });
+  }
+}

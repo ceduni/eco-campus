@@ -1,19 +1,53 @@
-import { useEffect } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import React from 'react';
+import axios from 'axios';
 
-function Map() {
+
+mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
+
+export default function Map({ onMapReady }) {
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+
   useEffect(() => {
-    if (document.getElementById('map')._leaflet_id) return;
+    if (map.current) return;
 
-    const map = L.map('map').setView([45.5017, -73.5673], 13);
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-73.5673, 45.5017], // mtl
+      zoom: 10,
+    });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
+    map.current.on('load', () => {
+      onMapReady(map.current);
+    });
+
   }, []);
 
-  return <div id="map" style={{ height: '500px', width: '100%' }}></div>;
-}
+  // prendre dynamiquement les markers de la table institution 
+  // REVOIR !!!! 
+ /*  axios.get('http://localhost:3001/markers')
+      .then((res) => {
+        const markers = res.data;
 
-export default Map;
+        markers.forEach((marker) => {
+          new mapboxgl.Marker({ color: marker.color || 'red' })
+            .setLngLat([marker.lng, marker.lat])
+            .addTo(mapRef.current);
+        });
+      })
+      .catch((err) => {
+        console.error('Erreur lors du fetch des markers :', err);
+      }); */
+
+
+
+  return (
+    <div>
+      <div ref={mapContainer} style={{  width: '100vw', height: '100vh' }} />
+    </div>
+  );
+}

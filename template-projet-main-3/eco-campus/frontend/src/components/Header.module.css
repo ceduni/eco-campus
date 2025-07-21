@@ -1,0 +1,106 @@
+.header {
+  position: absolute;
+  top: 40px;
+  left: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 140px);
+  z-index: 1001;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse; /* <- pour mettre le logo à droite du texte */
+  gap: 0px;
+  
+}
+
+
+.logoIcon {
+  height: 80px;
+  width: auto;
+}
+
+.logoText {
+  font-family: 'Anton', sans-serif;
+  font-size: 60px;
+  font-weight: 400;
+  color: black;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  margin: 0;
+}
+
+.toggleButtons {
+  position: absolute;
+  top: 5px;
+  left: 1990px; /* ajuste selon ce que tu veux */
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #000;
+}
+
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: none;
+  padding: 10px 10px;
+  font-family: 'Anton', sans-serif;
+  font-size: 25px;
+  cursor: pointer;
+  color: #000;
+  transition: background 0.3s;
+}
+
+.btn img {
+  height: 40px;
+  
+}
+
+.active {
+  background-color: #FFD500; /* Jaune vif */
+}
+
+.languageSwitcher {
+  position: absolute;
+  top: 2px;
+  right: 40px; /* ajuste la position à ta guise */
+}
+
+.languageButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+  padding: 0;
+}
+
+.languageButton img {
+  height: 130%;
+  width: auto;
+}
+
+.dropdown {
+  position: absolute;
+  top: 70px;
+  right: -30px;
+  background: white;
+  border: 2px solid black;
+  border-radius: 8px;
+  z-index: 1002;
+}
+
+.dropdown div {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background-color: #f0f0f0;
+}
