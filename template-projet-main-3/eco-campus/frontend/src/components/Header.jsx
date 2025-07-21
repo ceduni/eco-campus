@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // ✅ Ajouté
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import styles from './Header.module.css';
 
 const Header = () => {
-  const location = useLocation();     // ✅ Pour détecter la page active
-  const navigate = useNavigate();     // ✅ Pour rediriger
+  const location = useLocation();     
+  const navigate = useNavigate();     
   const [showDropdown, setShowDropdown] = useState(false);
 
   const toggleDropdown = () => {
