@@ -6,7 +6,7 @@ export async function fetchAllMarkers(): Promise<MarkerData[]> {
   console.log("ok ici");
   const { data, error } = await supabase
     .from('institution')
-    .select('id_institution, name,type, lat, lng');
+    .select('*');
 
   if (error) {
     throw new Error("Erreur lors de la récupération des ratios : " + error.message);
@@ -20,7 +20,8 @@ export async function fetchAllMarkers(): Promise<MarkerData[]> {
       row.name,
       row.lat,
       row.lng,
-      row.type 
+      row.type,
+      row.logo
     );
 
   });

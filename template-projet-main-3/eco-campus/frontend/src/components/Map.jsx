@@ -5,6 +5,8 @@ import React from 'react';
 import axios from 'axios';
 import pinCarte from '../assets/pinCarte.svg';
 import '../assets/pinCarte.css';
+import { createRoot } from 'react-dom/client';
+
 
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
@@ -36,19 +38,22 @@ export default function Map({ onMapReady }) {
     const markers = res.data;
 
     markers.forEach((marker) => {
-      const el = document.createElement('img');
-      el.src = pinCarte;
-      el.alt = 'marker pin';
-      el.className = 'map-pin';
+      const el = document.createElement('div');
+      const root = createRoot(el);
 
-      const popup = new mapboxgl.Popup()
-        .setHTML(`<h3>${marker.name}</h3>`);
+      root.render(
+        <div className="pin-wrapper">
+          <div className='pin-header'>
+          <div className="pin-label">{marker.name}</div>
+          <img src={`/logos/${marker.logo}`} className="pin-logo" alt={marker.name} />
+          </div>
+          <img src={pinCarte} alt="pin" className="map-pin" />
+        </div>
+      );
 
       new mapboxgl.Marker(el)
         .setLngLat([marker.lng, marker.lat])
-        .setPopup(popup)
         .addTo(map.current);
-        console.log("pins added");
 
     });
   })
