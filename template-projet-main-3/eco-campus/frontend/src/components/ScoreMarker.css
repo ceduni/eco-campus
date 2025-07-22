@@ -1,11 +1,35 @@
 .score-bulle {
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 4px 6px;
-  font-size: 12px;
-  text-align: center;
+  width: 85px;
+  height: 85px;
   border-radius: 50%;
-   width: 75px;
-  height: 75px;
+  background: radial-gradient(circle at center, #FFD43B 60%, white 100%);
+  border: 4px solid white;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #111;
+  font-family: 'Anton', sans-serif;
+  transition: transform 0.2s ease;
+}
+
+.score-bulle:hover {
+  transform: scale(1.05);
+}
+
+.score-bulle p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.score-bulle-name {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-bulle-value {
+  font-size: 18px;
 }

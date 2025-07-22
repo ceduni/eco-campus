@@ -7,8 +7,8 @@ import './ScoreMarker.css';
 export function Score({ name, value }) {
   return (
     <div className='score-bulle'>
-      <p>{name}</p>
-      <p>{value}</p>
+      <h1 className='score-bulle-name'>{name}</h1>
+      <p className='score-bulle-value'>{value}</p>
     </div>
   );
 }
@@ -23,7 +23,7 @@ export function ScoreDisplay({ scores, mapInstance }) {
   }, []);
 
   useEffect(() => {
-/*     console.log("Scores:", scores);
+/*  console.log("Scores:", scores);
     console.log("Map instance:", mapInstance);
     console.log("Markers Data:", markersData); */
 

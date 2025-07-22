@@ -29,7 +29,7 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
 
     results.push({
       id_institution: id.toString(),
-      score: total * 10
+      score: Math.round(total * 10)
     });
   }
 
