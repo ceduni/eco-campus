@@ -3,6 +3,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { createRoot } from 'react-dom/client'; 
 import './ScoreMarker.css';
+import { initialMarkers } from './Map';
 
 export function Score({ name, value }) {
   return (
@@ -23,11 +24,10 @@ export function ScoreDisplay({ scores, mapInstance }) {
   }, []);
 
   useEffect(() => {
-/*  console.log("Scores:", scores);
-    console.log("Map instance:", mapInstance);
-    console.log("Markers Data:", markersData); */
 
     if (!mapInstance || markersData.length === 0 || scores.length === 0) return;
+
+     initialMarkers.forEach((m) => m.remove());
 
     const markerMap = new Map(
       markersData.map(m => [String(m.id_institution), m])
@@ -52,6 +52,7 @@ export function ScoreDisplay({ scores, mapInstance }) {
 
     return () => {
       createdMarkers.forEach(m => m.remove());
+      initialMarkers.forEach((m) => m.addTo(mapInstance));
     };
   }, [mapInstance, markersData, scores]);
 
@@ -70,11 +71,10 @@ export function ScoreDisplayStars({ scores, mapInstance }) {
   }, []);
 
   useEffect(() => {
-/*     console.log("Scores:", scores);
-    console.log("Map instance:", mapInstance);
-    console.log("Markers Data:", markersData); */
 
     if (!mapInstance || markersData.length === 0 || scores.length === 0) return;
+
+    initialMarkers.forEach((m) => m.remove());
 
     const markerMap = new Map(
       markersData.map(m => [String(m.id_institution), m])
@@ -99,6 +99,7 @@ export function ScoreDisplayStars({ scores, mapInstance }) {
 
     return () => {
       createdMarkers.forEach(m => m.remove());
+      initialMarkers.forEach((m) => m.addTo(mapInstance));
     };
   }, [mapInstance, markersData, scores]);
 

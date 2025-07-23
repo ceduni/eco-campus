@@ -7,7 +7,7 @@ import pinCarte from '../assets/pinCarte.svg';
 import '../assets/pinCarte.css';
 import { createRoot } from 'react-dom/client';
 
-
+export const initialMarkers = []; 
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
 
@@ -21,52 +21,47 @@ export default function Map({ onMapReady }) {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [-73.5673, 45.5017], // mtl
+      center: [-73.5673, 45.5017],
       zoom: 12,
     });
 
     map.current.on('load', () => {
       onMapReady(map.current);
-    });
 
+      axios.get('http://localhost:3001/markers')
+        .then((res) => {
+          const markers = res.data;
+
+          markers.forEach((marker) => {
+            const el = document.createElement('div');
+            const root = createRoot(el);
+
+            root.render(
+              <div className="pin-wrapper">
+                <div className='pin-header'>
+                  <div className="pin-label">{marker.name}</div>
+                  <img src={`/logos/${marker.logo}`} className="pin-logo" alt={marker.name} />
+                </div>
+                <img src={pinCarte} alt="pin" className="map-pin" />
+              </div>
+            );
+
+            const markerObj = new mapboxgl.Marker(el)
+              .setLngLat([marker.lng, marker.lat])
+              .addTo(map.current);
+
+            initialMarkers.push(markerObj); 
+          });
+        })
+        .catch((err) => {
+          console.error('Erreur lors du fetch des pins :', err);
+        });
+    });
   }, []);
-
-  // prendre dynamiquement les markers de la table institution 
-  // REVOIR !!!! 
-  axios.get('http://localhost:3001/markers')
-  .then((res) => {
-    const markers = res.data;
-
-    markers.forEach((marker) => {
-      const el = document.createElement('div');
-      const root = createRoot(el);
-
-      root.render(
-        <div className="pin-wrapper">
-          <div className='pin-header'>
-          <div className="pin-label">{marker.name}</div>
-          <img src={`/logos/${marker.logo}`} className="pin-logo" alt={marker.name} />
-          </div>
-          <img src={pinCarte} alt="pin" className="map-pin" />
-        </div>
-      );
-
-      new mapboxgl.Marker(el)
-        .setLngLat([marker.lng, marker.lat])
-        .addTo(map.current);
-
-    });
-  })
-  .catch((err) => {
-    console.error('Erreur lors du fetch des pins :', err);
-  });
-
-
-
 
   return (
     <div>
-      <div ref={mapContainer} style={{  width: '100vw', height: '100vh' }} />
+      <div ref={mapContainer} style={{ width: '100vw', height: '100vh' }} />
     </div>
   );
 }

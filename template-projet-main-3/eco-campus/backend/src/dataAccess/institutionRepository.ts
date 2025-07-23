@@ -3,7 +3,7 @@ import { institutionData } from '../models/institutionData';
 
 
 export async function getCompleteInstitutionData(): Promise<institutionData[]> {
-  // ratios
+  // ratios 
   const { data: ratioData, error: ratioError } = await supabase
     .from('ratio_values')
     .select('id_institution, id_ratio, value, year')

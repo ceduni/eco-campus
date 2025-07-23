@@ -3,7 +3,7 @@ import {MarkerData} from '../models/MarkerData';
 
 
 export async function fetchAllMarkers(): Promise<MarkerData[]> {
-  console.log("ok ici");
+  console.log("hi asma");
   const { data, error } = await supabase
     .from('institution')
     .select('*');
