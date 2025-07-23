@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import styles from './Header.module.css';
 
 const Header = () => {
-  const [activeTab, setActiveTab] = useState('carte');
+  const location = useLocation();     
+  const navigate = useNavigate();     
   const [showDropdown, setShowDropdown] = useState(false);
-
-  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setShowDropdown(prev => !prev);
@@ -15,16 +14,6 @@ const Header = () => {
   const changeLanguage = (lang) => {
     console.log(`Langue changée en: ${lang}`);
     setShowDropdown(false);
-  };
-
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'carte') {
-      navigate('/');
-    } else if (tab === 'rapport') {
-      navigate('/rapport');
-    }
   };
 
   return (
@@ -36,15 +25,15 @@ const Header = () => {
 
       <div className={styles.toggleButtons}>
         <button
-          className={`${styles.btn} ${activeTab === 'carte' ? styles.active : ''}`}
-          onClick={() => handleTabClick('carte')}
+          className={`${styles.btn} ${location.pathname === '/' ? styles.active : ''}`}
+          onClick={() => navigate('/')}
         >
           <img src="/src/assets/maplogo.svg" alt="Carte" />
           <span>CARTE</span>
         </button>
         <button
-          className={`${styles.btn} ${activeTab === 'rapport' ? styles.active : ''}`}
-          onClick={() => handleTabClick('rapport')}
+          className={`${styles.btn} ${location.pathname === '/rapport' ? styles.active : ''}`}
+          onClick={() => navigate('/rapport')}
         >
           <img src="/src/assets/rapport.svg" alt="Rapport" />
           <span>RAPPORT</span>

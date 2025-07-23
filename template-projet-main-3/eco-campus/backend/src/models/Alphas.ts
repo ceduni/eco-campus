@@ -18,7 +18,6 @@ export class Alphas {
 
   //ajouter validation du format 
 
-
   public getCoeffRatio(): Map<string, number> {
     return this.coeff_ratio;
   }

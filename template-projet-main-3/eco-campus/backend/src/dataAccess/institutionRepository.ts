@@ -1,9 +1,11 @@
 import supabase from '../supabaseClient';
-import { institutionData } from '../models/institutionData';
+import {institutionData } from '../models/institutionData';
 
 
 export async function getCompleteInstitutionData(): Promise<institutionData[]> {
-  // ratios 
+
+
+
   const { data: ratioData, error: ratioError } = await supabase
     .from('ratio_values')
     .select('id_institution, id_ratio, value, year')
@@ -13,16 +15,17 @@ export async function getCompleteInstitutionData(): Promise<institutionData[]> {
     throw new Error('Erreur lors de la récupération des ratios: ' + ratioError.message);
   }
 
-  // stars 
+  // 2. Récupération des scores stars
   const { data: starsData, error: starsError } = await supabase
     .from('stars_values')
-    .select('id_institution, id_metric, value, year, type')
+    .select('id_institution, id_metric, value, year')
     .eq('year', 2025);
 
   if (starsError) {
     throw new Error('Erreur lors de la récupération des étoiles: ' + starsError.message);
   }
 
+  // 3. Construction de la map d'institutions
   const institutionsMap = new Map<string, institutionData>();
 
   for (const { id_institution, id_ratio, value } of ratioData) {
@@ -34,19 +37,74 @@ export async function getCompleteInstitutionData(): Promise<institutionData[]> {
     institutionsMap.set(id_institution, institution);
   }
 
-  for (const { id_institution, id_metric, value, type } of starsData) {
-  const institution =
-    institutionsMap.get(id_institution) ??
-    new institutionData(id_institution, {}, {}, {});
+  for (const { id_institution, id_metric, value } of starsData) {
+    const institution =
+      institutionsMap.get(id_institution) ??
+      new institutionData(id_institution, {}, {}, {});
 
-  const parsedValue = parseFloat(value);
-  institution.stars_values[id_metric] = parsedValue;
-
-  if (type === 'op') {
-    institution.op_values[id_metric] = parsedValue;
+    institution.stars_values[id_metric] = parseFloat(value);
+    institutionsMap.set(id_institution, institution);
   }
 
-  institutionsMap.set(id_institution, institution);
+  const result = Array.from(institutionsMap.values());
+  return result;
 }
-  return Array.from(institutionsMap.values());
+
+
+export async function getInstitDataById(id_institution :string): Promise<institutionData | null> {
+  //Récupération des ratios
+  const { data: ratioData, error: ratioError } = await supabase
+    .from('ratio_values')
+    .select('id_ratio, value, year')
+    .eq('id_institution', id_institution)
+    .eq('year', 2025);
+
+  if (ratioError) {
+    throw new Error('Erreur lors de la récupération des ratios: ' + ratioError.message);
+  }
+
+  // Récupération des scores STARS
+  const { data: starsData, error: starsError } = await supabase
+    .from('stars_values')
+    .select('id_metric, value, year')
+    .eq('id_institution', id_institution)
+    .eq('year', 2025);
+
+  if (starsError) {
+    throw new Error('Erreur lors de la récupération des étoiles: ' + starsError.message);
+  }
+
+  //Récupération des valeurs OP (nouvel attribut)
+  const { data: opData, error: opError } = await supabase
+    .from('op_values')
+    .select('id_metric, value, year')
+    .eq('id_institution', id_institution)
+    .eq('year', 2025);
+
+  if (opError) {
+    throw new Error('Erreur lors de la récupération des valeurs OP: ' + opError.message);
+  }
+
+  //retourner null
+  if (!ratioData.length && !starsData.length && !opData.length) {
+    return null;
+  }
+
+  
+  const ratios: Record<string, number> = {};
+  for (const { id_ratio, value } of ratioData) {
+    ratios[id_ratio] = parseFloat(value);
+  }
+
+  const stars: Record<string, number> = {};
+  for (const { id_metric, value } of starsData) {
+    stars[id_metric] = parseFloat(value);
+  }
+
+  const ops: Record<string, number> = {};
+  for (const { id_metric, value } of opData) {
+    ops[id_metric] = parseFloat(value);
+  }
+
+  return new institutionData(id_institution, ratios, stars, ops);
 }
