@@ -3,7 +3,9 @@ import {institutionData } from '../models/institutionData';
 
 
 export async function getCompleteInstitutionData(): Promise<institutionData[]> {
-  // 1. Récupération des ratios
+
+
+
   const { data: ratioData, error: ratioError } = await supabase
     .from('ratio_values')
     .select('id_institution, id_ratio, value, year')
