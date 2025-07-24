@@ -28,7 +28,7 @@ export default function Map({ onMapReady }) {
     map.current.on('load', () => {
       onMapReady(map.current);
 
-      axios.get('http://localhost:3001/markers')
+      axios.get('http://localhost:3001/institutions')
         .then((res) => {
           const markers = res.data;
 

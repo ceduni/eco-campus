@@ -18,7 +18,7 @@ export function ScoreDisplay({ scores, mapInstance }) {
   const [markersData, setMarkersData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/markers')
+    axios.get('http://localhost:3001/institutions')
       .then((res) => setMarkersData(res.data))
       .catch(console.error);
   }, []);
@@ -65,7 +65,7 @@ export function ScoreDisplayStars({ scores, mapInstance }) {
   const [markersData, setMarkersData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/markers')
+    axios.get('http://localhost:3001/institutions')
       .then((res) => setMarkersData(res.data))
       .catch(console.error);
   }, []);
