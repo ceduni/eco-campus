@@ -1,7 +1,7 @@
-import { institutionData } from '../models/institutionData';
+import { Scores } from '../models/Scores';
 import { Alphas } from '../models/Alphas';
 
-export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
+export function calculateGlobalScores(data: Scores[], alphas: Alphas) {
   type ValuesMap = { [key: string]: number };
   const results: { id_institution: string; score: number }[] = [];
 
