@@ -49,8 +49,8 @@ export async function getCompleteInstitutionData(): Promise<institutionData[]> {
 }
 
 
-export async function getInstitDataById(id_institution :string): Promise<institutionData | null> {
-  //Récupération des ratios
+export async function getInstitDataById(id_institution: string): Promise<{ data: institutionData, name: string } | null> {
+  // 1. Récupération des ratios
   const { data: ratioData, error: ratioError } = await supabase
     .from('ratio_values')
     .select('id_ratio, value, year')
@@ -61,7 +61,7 @@ export async function getInstitDataById(id_institution :string): Promise<institu
     throw new Error('Erreur lors de la récupération des ratios: ' + ratioError.message);
   }
 
-  // Récupération des scores STARS
+  // 2. Récupération des scores stars
   const { data: starsData, error: starsError } = await supabase
     .from('stars_values')
     .select('id_metric, value, year')
@@ -72,20 +72,15 @@ export async function getInstitDataById(id_institution :string): Promise<institu
     throw new Error('Erreur lors de la récupération des étoiles: ' + starsError.message);
   }
 
-  //Récupération des valeurs OP (nouvel attribut)
-  const { data: opData, error: opError } = await supabase
-    .from('op_values')
-    .select('id_metric, value, year')
+  // 3. Récupération du nom de l’institution
+  const { data: nameData, error: nameError } = await supabase
+    .from('institution')
+    .select('name')
     .eq('id_institution', id_institution)
-    .eq('year', 2025);
+    .single();
 
-  if (opError) {
-    throw new Error('Erreur lors de la récupération des valeurs OP: ' + opError.message);
-  }
-
-  //retourner null
-  if (!ratioData.length && !starsData.length && !opData.length) {
-    return null;
+  if (nameError) {
+    throw new Error('Erreur lors de la récupération du nom de l’institution: ' + nameError.message);
   }
 
   
@@ -99,10 +94,16 @@ export async function getInstitDataById(id_institution :string): Promise<institu
     stars[id_metric] = parseFloat(value);
   }
 
-  const ops: Record<string, number> = {};
-  for (const { id_metric, value } of opData) {
-    ops[id_metric] = parseFloat(value);
+ 
+  if (Object.keys(ratios).length === 0 && Object.keys(stars).length === 0) {
+    return null;
   }
 
-  return new institutionData(id_institution, ratios, stars, ops);
+  
+  const institution = new institutionData(id_institution, ratios, stars, {});
+
+  return {
+    data: institution,
+    name: nameData?.name ?? 'Université'
+  };
 }
