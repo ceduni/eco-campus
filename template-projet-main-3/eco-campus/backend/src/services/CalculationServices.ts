@@ -38,14 +38,14 @@ export function calculateGlobalScores(data: Scores[], alphas: Alphas) {
 
 
 export function calculateGlobalScoreById(
-  institution: institutionData,
+  score: Scores,
   alphas: Alphas
 ): number {
   const coeffRatio = alphas.getCoeffRatio();
   const coeffOp = alphas.getCoeffOp();
 
-  const ratios = institution.getRatiosValues();
-  const ops = institution.getOpValues();
+  const ratios = score.getRatiosValues();
+  const ops = score.getOpValues();
 
   let total = 0;
 
@@ -61,25 +61,3 @@ export function calculateGlobalScoreById(
 
   return total * 10;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
