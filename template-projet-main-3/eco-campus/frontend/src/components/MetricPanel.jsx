@@ -69,6 +69,7 @@ export function MetricPanel({ mapInstance }) {
 
     try {
       const res = await axios.post('http://localhost:3001/scores/globalscores', alphas);
+      localStorage.setItem('alphas', JSON.stringify(alphas));
       setScores(res.data);
     } catch (err) {
       console.error('Erreur Alphas:', err);

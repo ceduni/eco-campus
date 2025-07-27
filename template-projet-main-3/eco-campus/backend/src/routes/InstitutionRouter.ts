@@ -1,6 +1,7 @@
 import express from 'express';
 import supabase from '../supabaseClient';
 import { getInstitutions} from '../controllers/institutionController';
+
 const router = express.Router();
 
 
