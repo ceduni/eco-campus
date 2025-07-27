@@ -33,25 +33,29 @@ export async function getGlobalScores(req : Request, res : Response) {
 
 export async function getInstitutionDataById(req: Request, res: Response) {
   try {
-    const { id_institution, alphas } = req.body;
+    const { id_institution } = req.body;
 
-    if (!id_institution || !alphas) {
-      return res.status(400).json({ error: 'Missing institution id or alphas' });
+    if (!id_institution) {
+      return res.status(400).json({ error: 'id_institution est requis.' });
     }
 
     const rawData = await getInstitDataById(id_institution);
-
     if (!rawData) {
-      return res.status(404).json({ error: 'Institution not found' });
+      return res.status(404).json({ error: 'Institution non trouvée.' });
     }
 
-    const alphaObject = Alphas.createFromRaw(alphas); 
-    const score = calculateGlobalScoreById(rawData, alphaObject); 
+    const alphas = Alphas.fromJSON(req.body);
+    const score = calculateGlobalScoreById(rawData.data, alphas);
 
-    return res.status(200).json({ id_institution, score });
-
+   res.status(200).json({
+   id_institution,
+   institution_name: rawData.name,
+   global_score: score,
+   ratios_values: rawData.data.getRatiosValues(),
+   stars_values: rawData.data.getStarsValues()
+});
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Erreur get data by institution id' });
+    console.error('Erreur détaillée:', err instanceof Error ? err.message : err);
+    res.status(500).json({ error: 'Erreur getInstitutionDataById' });
   }
 }
