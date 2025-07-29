@@ -18,6 +18,8 @@ router.get('/stars', getStarsScore);
 // route pour obtenir le score final de stars
 router.get('/globalstarsscores', getGlobalStarsScore);
 
+router.post('/scoresById', getInstitutionDataById); //could also be  get, don't know why i have a bug 
+
 
 
 
