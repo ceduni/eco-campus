@@ -3,15 +3,16 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
 } from 'recharts';
 
-const data = [
-  { name: 'Concordia', score: 55 },
-  { name: 'HEC Montréal', score: 65 },
-  { name: 'McGill', score: 68 },
-  { name: 'UQAM', score: 82 },
-  { name: 'Université de Montréal', score: 92 },
-];
+const UniversityBarChart = ({ scores = [], universities = [] }) => {
+  // Mapper les ID vers les noms à partir de la base
+  const data = scores.map(({ id_institution, score }) => {
+    const uni = universities.find((u) => u.id_institution === id_institution);
+    return {
+      name: uni?.name || id_institution,
+      score,
+    };
+  });
 
-const UniversityBarChart = () => {
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">

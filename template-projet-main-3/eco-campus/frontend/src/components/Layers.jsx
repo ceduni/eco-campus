@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from './Layers.module.css';
 import axios from 'axios';
 import { ScoreDisplayStars } from './ScoreDisplay';
 import { AllZonesLayer } from './Zone';
-import { Marker } from 'react-map-gl'; // Assure-toi que react-map-gl est installé
+import UniversityList from './UniversityList';
 
 export const Layers = ({ mapInstance }) => {
   const [activeLayers, setActiveLayers] = useState({
@@ -13,7 +13,6 @@ export const Layers = ({ mapInstance }) => {
   });
 
   const [starsScores, setStarsScores] = useState(null);
-  const [universities, setUniversities] = useState([]);
   const [selectedUniversities, setSelectedUniversities] = useState([]);
 
   const handleLayerClick = async (layerType) => {
@@ -30,21 +29,6 @@ export const Layers = ({ mapInstance }) => {
         console.error('Erreur stars:', err);
       }
     }
-
-    if (layerType === 'universite') {
-      try {
-        const res = await axios.get('http://localhost:3001/institutions');
-        setUniversities(res.data);
-      } catch (err) {
-        console.error('Erreur chargement universités :', err);
-      }
-    }
-  };
-
-  const toggleSelection = (id) => {
-    setSelectedUniversities((prev) =>
-      prev.includes(id) ? prev.filter(uid => uid !== id) : [...prev, id]
-    );
   };
 
   return (
@@ -82,39 +66,13 @@ export const Layers = ({ mapInstance }) => {
         <ScoreDisplayStars scores={starsScores} mapInstance={mapInstance} />
       )}
 
-      {activeLayers.zones && (
-        <AllZonesLayer map={mapInstance} />
-      )}
+      {activeLayers.zones && <AllZonesLayer map={mapInstance} />}
 
       {activeLayers.universite && (
-        <div className={styles.uniList}>
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            className={styles.searchInput}
-            onChange={(e) => {
-              const search = e.target.value.toLowerCase();
-              setUniversities(prev => prev.map(u => ({
-                ...u,
-                visible: u.name.toLowerCase().includes(search) || u.id_institution.toLowerCase().includes(search)
-              })));
-            }}
-          />
-          <ul className={styles.uniDropdown}>
-            {universities.filter(u => u.visible !== false).map((uni) => (
-              <li key={uni.id_institution}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedUniversities.includes(uni.id_institution)}
-                    onChange={() => toggleSelection(uni.id_institution)}
-                  />
-                  {uni.name} 
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <UniversityList
+          selectedUniversities={selectedUniversities}
+          setSelectedUniversities={setSelectedUniversities}
+        />
       )}
     </div>
   );
