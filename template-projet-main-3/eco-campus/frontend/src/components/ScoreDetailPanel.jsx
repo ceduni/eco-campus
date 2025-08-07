@@ -8,7 +8,7 @@ export default function ScoreDetailPanel({ data, onBack, starsMeta, starsScores,
   const isStarMetric = starsMeta?.some(meta => meta.id_metric === id);
   const mainPercentage = isStarMetric
     ? (score / outOf) * 100
-    : score; // ratios treated as percentage
+    : score; 
 
   let mainFillClass = "low";
   if (mainPercentage >= 80) mainFillClass = "high";
