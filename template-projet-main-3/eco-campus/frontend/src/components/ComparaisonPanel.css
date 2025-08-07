@@ -12,10 +12,10 @@
 
 .comparison-header {
   display: flex;
-  justify-content: center; /* ← Centers both ScoreWidgets */
+  justify-content: center; 
   align-items: flex-start;
   padding: 6px 12px 4px;
-  gap: 16px; /* Controls the space between the two widgets */
+  gap: 16px; 
 }
 
 
