@@ -23,7 +23,7 @@ export default function CompareDetailPanel({
         id_metric: id,
         name: mainName,
         description,
-        denominateur: 100  // Force out of 100 for ratios
+        denominateur: 100  
       }];
 
   const comparisons = subcriteria.map(sub => {
