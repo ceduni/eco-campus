@@ -1,5 +1,6 @@
 import supabase from '../supabaseClient';
 import {InstitutionData} from '../models/institutionData';
+import  {Scores} from '../models/Scores'
 
 
 export async function fetchInstitutions(): Promise<InstitutionData[]> {
@@ -30,7 +31,7 @@ export async function fetchInstitutions(): Promise<InstitutionData[]> {
 }
 
 
-export async function getInstitDataById(id_institution: string): Promise<{ data: institutionData, name: string } | null> {
+export async function getInstitDataById(id_institution: string): Promise<{ data: Scores, name: string } | null> {
   // 1. Récupération des ratios
   const { data: ratioData, error: ratioError } = await supabase
     .from('ratio_values')
@@ -81,7 +82,7 @@ export async function getInstitDataById(id_institution: string): Promise<{ data:
   }
 
   // 6. Création de l'objet institutionData
-  const institution = new institutionData(id_institution, ratios, stars, {});
+  const institution = new Scores(id_institution, ratios, stars, {});
 
   return {
     data: institution,

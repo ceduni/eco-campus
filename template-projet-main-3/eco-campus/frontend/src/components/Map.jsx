@@ -11,7 +11,7 @@ export const initialMarkers = [];
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
 
-export default function Map({ onMapReady }) {
+export default function Map({ onMapReady, onInstitutionClick }) {
   const mapContainer = useRef(null);
   const map = useRef(null);
 
@@ -37,7 +37,7 @@ export default function Map({ onMapReady }) {
             const root = createRoot(el);
 
             root.render(
-              <div className="pin-wrapper">
+              <div className="pin-wrapper" onClick={() => onInstitutionClick(marker.id_institution)}>
                 <div className='pin-header'>
                   <div className="pin-label">{marker.name}</div>
                   <img src={`/logos/${marker.logo}`} className="pin-logo" alt={marker.name} />

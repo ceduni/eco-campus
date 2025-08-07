@@ -3,8 +3,9 @@ import styles from './Layers.module.css';
 import axios from 'axios';
 import { ScoreDisplayStars } from './ScoreDisplay';
 import { AllZonesLayer } from './Zone'; 
+import UniversityList from './UniversityList';
 
-export const Layers = ({ mapInstance }) => {
+export const Layers = ({ mapInstance, onInstitutionSelect, selectedUniversities, setSelectedUniversities }) => {
   const [activeLayers, setActiveLayers] = useState({
     stars: false,
     zones: false,
@@ -80,11 +81,18 @@ export const Layers = ({ mapInstance }) => {
       </div>
 
       {activeLayers.stars && starsScores && (
-        <ScoreDisplayStars scores={starsScores} mapInstance={mapInstance} />
+        <ScoreDisplayStars scores={starsScores} mapInstance={mapInstance} onInstitutionSelect={onInstitutionSelect}/>
       )}
 
       {activeLayers.zones && (
         <AllZonesLayer map={mapInstance} />
+      )}
+
+      {activeLayers.universite && (
+        <UniversityList
+          selectedUniversities={selectedUniversities}
+          setSelectedUniversities={setSelectedUniversities}
+        />
       )}
     </div>
   );

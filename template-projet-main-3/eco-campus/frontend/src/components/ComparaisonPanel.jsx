@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ScoreWidget from "../widgets/ScoreWidget";
+import CompareDetailPanel from './CompDetailPanel'; 
 import './ComparaisonPanel.css';
 import './sharedPanel.css';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -11,15 +12,15 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
   const [uniBData, setUniBData] = useState(null);
   const [starsMeta, setStarsMeta] = useState({});
   const [ratiosMeta, setRatiosMeta] = useState({});
-  
+  const [selectedMetric, setSelectedMetric] = useState(null); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [resA, resB] = await Promise.all([
-          axios.post('http://localhost:3001/scoresById', { id_institution: idA }),
-          axios.post('http://localhost:3001/scoresById', { id_institution: idB })
+          axios.post('http://localhost:3001/scores/scoresById', { id_institution: idA }),
+          axios.post('http://localhost:3001/scores/scoresById', { id_institution: idB })
         ]);
         setUniAData(resA.data);
         setUniBData(resB.data);
@@ -32,12 +33,15 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
 
     async function fetchStarsMeta() {
       try {
-        const res = await axios.get('http://localhost:3001/starsmetric');
+        const res = await axios.get('http://localhost:3001/metrics/stars');
         const meta = {};
         res.data.forEach(star => {
           meta[star.id_metric] = {
+            id_metric: star.id_metric,         
+            id_parent: star.id_parent,        
             denominateur: star.denominateur,
-            name: star.name
+            name: star.name,
+            description: star.description
           };
         });
         setStarsMeta(meta);
@@ -48,20 +52,17 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
 
     async function fetchRatiosMeta() {
       try {
-        const res = await axios.get('http://localhost:3001/ratios');
-        console.log("Raw ratio meta response:", res.data);
-
+        const res = await axios.get('http://localhost:3001/metrics/ratios');
         const meta = {};
         res.data.forEach(r => {
           meta[r.id_ratios] = {
-            name: r.name
+            name: r.name,
+            description: r.description
           };
         });
         setRatiosMeta(meta);
       } catch (err) {
         console.error("Erreur chargement meta ratios:", err);
-        console.log("Ratios meta loaded:", meta);
-
       }
     }
 
@@ -70,15 +71,49 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
     fetchRatiosMeta();
   }, [idA, idB]);
 
-  if (loading || !uniAData || !uniBData) return <div className="panel-container">Chargement des données...</div>;
+  const handleMetricClick = (metricId, isStar = true) => {
+    const meta = isStar ? starsMeta[metricId] : ratiosMeta[metricId];
+    setSelectedMetric({
+      id: metricId,
+      description: meta?.description || '',
+      isStar
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="panel-container">
+        <div className="no-data-message">Chargement des données...</div>
+      </div>
+    );
+  }
+
+  if (
+    !uniAData || !uniAData.stars_values || !uniAData.ratios_values || 
+    !uniBData || !uniBData.stars_values || !uniBData.ratios_values
+  ) {
+    return (
+      <div className="panel-container">
+        <div className="no-data-message">Aucune donnée disponible pour cette comparaison.</div>
+      </div>
+    );
+  }
+
+  if (selectedMetric) {
+    return (
+      <CompareDetailPanel
+        data={selectedMetric}
+        onBack={() => setSelectedMetric(null)}
+        uniAData={uniAData}
+        uniBData={uniBData}
+        starsMeta={starsMeta}
+        ratiosMeta={ratiosMeta}
+      />
+    );
+  }
 
   const getSharedMetrics = (aValues, bValues, meta = {}, type = 'stars') => {
     const ids = new Set(Object.keys(aValues).filter(id => bValues[id] !== undefined));
-    console.log("Shared metrics for type", type, ":", Array.from(ids).map(id => ({
-  id,
-  name: meta[id]?.name
-})));
-
     return Array.from(ids).map(id => ({
       id,
       aScore: aValues[id],
@@ -91,63 +126,70 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
   const sharedStars = getSharedMetrics(uniAData.stars_values, uniBData.stars_values, starsMeta, 'stars');
   const sharedRatios = getSharedMetrics(uniAData.ratios_values, uniBData.ratios_values, ratiosMeta, 'ratios');
 
-  
-
   const starsAWin = sharedStars.filter(m => m.aScore > m.bScore);
   const starsBWin = sharedStars.filter(m => m.bScore > m.aScore);
   const ratiosAWin = sharedRatios.filter(m => m.aScore > m.bScore);
   const ratiosBWin = sharedRatios.filter(m => m.bScore > m.aScore);
 
-  const ScoreCompareBar = ({ label, aScore, bScore, outOf, aLabel, bLabel, aLogo, bLogo, tooltip }) => {
-    const percentageA = outOf ? (aScore / outOf) * 100 : aScore * 100;
-    const percentageB = outOf ? (bScore / outOf) * 100 : bScore * 100;
-    const aWins = aScore >= bScore;
+  const getLogoPath = (logo) => {
+    if (!logo) return '';
+    return `/logos/${logo.endsWith('.svg') ? logo : logo + '.svg'}`;
+  };
 
-    const winner = {
-      score: aWins ? aScore : bScore,
-      percentage: aWins ? percentageA : percentageB,
-      label: aWins ? aLabel : bLabel,
-      logo: aWins ? aLogo : bLogo,
-      className: 'high'
-    };
+  const ScoreCompareBar = ({ label, aScore, bScore, outOf, aLabel, bLabel, aLogo, bLogo, tooltip, onClick }) => {
+  const isRatio = outOf === undefined;
 
-    const loser = {
-      score: aWins ? bScore : aScore,
-      percentage: aWins ? percentageB : percentageA,
-      label: aWins ? bLabel : aLabel,
-      logo: aWins ? bLogo : aLogo,
-      className: 'low'
-    };
+  const percentageA = isRatio ? aScore : (aScore / outOf) * 100;
+  const percentageB = isRatio ? bScore : (bScore / outOf) * 100;
 
-    return (
-      <div className="score-section">
-        <div
-          className="score-id"
-          data-tooltip-id={`tooltip-${label}`}
-          data-tooltip-content={tooltip || label}
-        >
-          {label}
+  const aWins = aScore >= bScore;
+
+  return (
+    <div className="score-section clickable" onClick={onClick}>
+      <div
+        className="score-id"
+        data-tooltip-id={`tooltip-${label}`}
+        data-tooltip-content={tooltip || label}
+      >
+        {label}
+      </div>
+      <ReactTooltip id={`tooltip-${label}`} />
+
+      {/* Winner bar */}
+      <div className="bar-and-score">
+        <img
+          src={getLogoPath(aWins ? aLogo : bLogo)}
+          alt={aWins ? aLabel : bLabel}
+          className="score-logo"
+          onError={(e) => { e.target.style.display = 'none'; }}
+        />
+        <div className="score-bar-container">
+          <div className="score-bar-fill high" style={{ width: `${aWins ? percentageA : percentageB}%` }} />
         </div>
-        <ReactTooltip id={`tooltip-${label}`} />
-
-        <div className="bar-and-score">
-          <img src={`/logos/${winner.logo}`} alt={winner.label} className="score-logo" />
-          <div className="score-bar-container">
-            <div className={`score-bar-fill ${winner.className}`} style={{ width: `${winner.percentage}%` }} />
-          </div>
-          <div className="score-value">{outOf ? `${winner.score} / ${outOf}` : winner.score.toFixed(2)}</div>
-        </div>
-
-        <div className="bar-and-score">
-          <img src={`/logos/${loser.logo}`} alt={loser.label} className="score-logo" />
-          <div className="score-bar-container">
-            <div className={`score-bar-fill ${loser.className}`} style={{ width: `${loser.percentage}%` }} />
-          </div>
-          <div className="score-value">{outOf ? `${loser.score} / ${outOf}` : loser.score.toFixed(2)}</div>
+        <div className="score-value">
+          {isRatio ? (aWins ? aScore : bScore).toFixed(2) : `${aWins ? aScore : bScore} / ${outOf}`}
         </div>
       </div>
-    );
-  };
+
+      {/* Loser bar */}
+      <div className="bar-and-score">
+        <img
+          src={getLogoPath(aWins ? bLogo : aLogo)}
+          alt={aWins ? bLabel : aLabel}
+          className="score-logo"
+          onError={(e) => { e.target.style.display = 'none'; }}
+        />
+        <div className="score-bar-container">
+          <div className="score-bar-fill low" style={{ width: `${aWins ? percentageB : percentageA}%` }} />
+        </div>
+        <div className="score-value">
+          {isRatio ? (aWins ? bScore : aScore).toFixed(2) : `${aWins ? bScore : aScore} / ${outOf}`}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
   return (
     <div className="panel-container">
@@ -159,13 +201,29 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
           <div className="comparison-header">
             <div className="university-header">
               <div className="university-name">
-                <img src={`/logos/${uniAData.logo}`} className="score-logo" /> {uniAData.institution_name}
+                {uniAData.logo && (
+                  <img
+                    src={getLogoPath(uniAData.logo)}
+                    alt={uniAData.institution_name}
+                    className="score-logo"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                )}
+                {uniAData.institution_name}
               </div>
               <ScoreWidget score={uniAData.global_score} label={uniAData.institution_name} />
             </div>
             <div className="university-header">
               <div className="university-name">
-                <img src={`/logos/${uniBData.logo}`} className="score-logo" /> {uniBData.institution_name}
+                {uniBData.logo && (
+                  <img
+                    src={getLogoPath(uniBData.logo)}
+                    alt={uniBData.institution_name}
+                    className="score-logo"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                )}
+                {uniBData.institution_name}
               </div>
               <ScoreWidget score={uniBData.global_score} label={uniBData.institution_name} />
             </div>
@@ -173,8 +231,8 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
 
           {/* STARS Section */}
           <div className="stars-header">
-             <h3 className="mini-header">STARS</h3>
-             <p className="stars-definition">Sustainability Tracking, Assessment & Rating System</p>
+            <h3 className="mini-header">STARS</h3>
+            <p className="stars-definition">Sustainability Tracking, Assessment & Rating System</p>
           </div>
 
           <div className="score-section">
@@ -191,6 +249,7 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
                 aLogo={uniAData.logo}
                 bLogo={uniBData.logo}
                 tooltip={metric.name}
+                onClick={() => handleMetricClick(metric.id, true)}
               />
             ))}
           </div>
@@ -209,6 +268,7 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
                 aLogo={uniAData.logo}
                 bLogo={uniBData.logo}
                 tooltip={metric.name}
+                onClick={() => handleMetricClick(metric.id, true)}
               />
             ))}
           </div>
@@ -229,6 +289,7 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
                 aLogo={uniAData.logo}
                 bLogo={uniBData.logo}
                 tooltip={metric.name}
+                onClick={() => handleMetricClick(metric.id, false)}
               />
             ))}
           </div>
@@ -246,6 +307,7 @@ export default function UniversityComparisonPanel({ idA, idB, onClose }) {
                 aLogo={uniAData.logo}
                 bLogo={uniBData.logo}
                 tooltip={metric.name}
+                onClick={() => handleMetricClick(metric.id, false)}
               />
             ))}
           </div>

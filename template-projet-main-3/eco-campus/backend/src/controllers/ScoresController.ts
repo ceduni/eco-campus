@@ -1,7 +1,8 @@
-import { calculateGlobalScores} from '../services/CalculationServices';
+import { calculateGlobalScores, calculateGlobalScoreById} from '../services/CalculationServices';
 import { getAllReports, fetchAllStarsFinalResults } from '../dataAccess/reportRepository';
 import { Request, Response } from 'express';
 import {Alphas} from '../models/Alphas';
+import { getInstitDataById } from '../dataAccess/institutionRepository';
 
 // fonction pour le score global a ajuster en post ??? 
 export async function getGlobalScores(req : Request, res : Response) {

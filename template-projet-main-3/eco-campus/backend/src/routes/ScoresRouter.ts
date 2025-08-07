@@ -1,7 +1,7 @@
 
 import express from 'express';
 //import { getGlobalScores, getStarsScore, getGlobalScoresPerso } from '../controllers/institutionController';
-import { getGlobalScores, getStarsScore, getGlobalStarsScore} from '../controllers/ScoresController';
+import { getGlobalScores, getStarsScore, getGlobalStarsScore, getInstitutionDataById} from '../controllers/ScoresController';
 import supabase from '../supabaseClient';
 
 

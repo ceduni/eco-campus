@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import UniversityPanel from '../components/UniversityPanel';
 import ScoreDetailPanel from '../components/ScoreDetailPanel';
+import Map from '../components/Map';
 import axios from 'axios';
 
-function MapPage() {
-  const [selectedInstitutionId, setSelectedInstitutionId] = useState(1);
-  const [activeScore, setActiveScore] = useState(null);
 
+function MapPage() {
+  const [selectedInstitutionId, setSelectedInstitutionId] = useState(null); // make default null
+  const [activeScore, setActiveScore] = useState(null);
   const [starsMeta, setStarsMeta] = useState([]);
   const [starsScores, setStarsScores] = useState({});
-
   const [ratiosMeta, setRatiosMeta] = useState([]);
   const [ratiosScores, setRatiosScores] = useState({});
 
+  const handleInstitutionClick = (id) => {
+    setSelectedInstitutionId(id);
+    setActiveScore(null); // make sure we close the detail panel when selecting new institution
+  };
+
   useEffect(() => {
     async function fetchAllData() {
+      if (!selectedInstitutionId) return;
       try {
         const [starsMetaRes, ratiosMetaRes, scoresRes] = await Promise.all([
-          axios.get('http://localhost:3001/starsmetric'),
-          axios.get('http://localhost:3001/ratios'),
-          axios.post('http://localhost:3001/scoresById', {
+          axios.get('http://localhost:3001/metrics/stars'),
+          axios.get('http://localhost:3001/metrics/ratios'),
+          axios.post('http://localhost:3001/scores/scoresById', {
             id_institution: selectedInstitutionId,
           }),
         ]);
-
         setStarsMeta(starsMetaRes.data);
         setRatiosMeta(ratiosMetaRes.data);
         setStarsScores(scoresRes.data.stars_values || {});
@@ -33,13 +38,12 @@ function MapPage() {
       }
     }
 
-    if (selectedInstitutionId) {
-      fetchAllData();
-    }
+    fetchAllData();
   }, [selectedInstitutionId]);
 
   return (
     <div>
+      <Map onInstitutionClick={handleInstitutionClick} />
       {activeScore ? (
         <ScoreDetailPanel
           data={activeScore}
@@ -53,11 +57,12 @@ function MapPage() {
         <UniversityPanel
           institutionId={selectedInstitutionId}
           onScoreClick={(scoreData) => setActiveScore(scoreData)}
-          onClose={() => setSelectedInstitutionId(null)} // Close panel
+          onClose={() => setSelectedInstitutionId(null)}
         />
-      ) : null} {/* renders nothing when no institution is selected */}
+      ) : null}
     </div>
   );
 }
+
 
 export default MapPage;

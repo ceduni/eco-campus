@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ScoreWidget from "../widgets/ScoreWidget";
 import { Tooltip } from 'react-tooltip';
-import 'react-tooltip/dist/react-tooltip.css'; 
+import 'react-tooltip/dist/react-tooltip.css';
 import './UniversityPanel.css';
 import './sharedPanel.css';
 
@@ -18,16 +18,39 @@ function UniversityHeader({ name, score, tier }) {
 }
 
 function ScoreBar({ id, score, outOf, description, onClick, metricName, isRatio = false }) {
-  const percentage = outOf ? (score / outOf) * 100 : 0;
+  const [tooltipReady, setTooltipReady] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setTooltipReady(true), 0);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  let percentage;
+  if (isRatio) {
+    percentage = score;
+  } else {
+    percentage = outOf ? (score / outOf) * 100 : 0;
+  }
+
   let fillClass = "low";
   if (percentage >= 80) fillClass = "high";
   else if (percentage >= 50) fillClass = "medium";
 
   return (
     <div className="score-box-horizontal" onClick={() => onClick?.({ id, score, outOf, description, metricName })}>
-      <Tooltip id={`tooltip-${id}`} place="top" effect="solid" />
+      {tooltipReady && (
+        <Tooltip
+          anchorSelect={`[data-tooltip-anchor="${id}"]`}
+          place="top"
+          effect="solid"
+        />
+      )}
       <div className="bar-and-score">
-        <div className="score-id" data-tooltip-id={`tooltip-${id}`} data-tooltip-content={metricName}>
+        <div
+          className="score-id"
+          data-tooltip-anchor={id}
+          data-tooltip-content={metricName}
+        >
           {id}
         </div>
         <div className="score-bar-container">
@@ -41,20 +64,26 @@ function ScoreBar({ id, score, outOf, description, onClick, metricName, isRatio 
   );
 }
 
+function sortMetricsByAlphas(metrics, alphas, isRatio = false) {
+  if (!alphas) return metrics;
 
-function sortByNumericId(arr) {
-  return arr.sort((a, b) => {
-    const extractNumbers = id => {
-      const match = id.match(/(\d+)/g);
-      return match ? match.map(Number) : [Infinity];
-    };
-    const [a1, a2] = extractNumbers(a.id);
-    const [b1, b2] = extractNumbers(b.id);
-    return a1 - b1 || (a2 || 0) - (b2 || 0);
+  const coeffs = isRatio ? alphas.coeff_ratio : alphas.coeff_op;
+
+  return [...metrics].sort((a, b) => {
+    const weightA = coeffs?.[a.id] ?? 0;
+    const weightB = coeffs?.[b.id] ?? 0;
+    return weightB - weightA;
   });
 }
 
-export default function UniversityPanel({ institutionId = 1, onScoreClick, onClose }) {
+export default function UniversityPanel({
+  institutionId,
+  institutionScore,
+  onScoreClick,
+  onClose,
+  showRatios,
+  alphas
+}) {
   const [institutionName, setInstitutionName] = useState('');
   const [score, setScore] = useState(0);
   const [tier, setTier] = useState('');
@@ -65,9 +94,9 @@ export default function UniversityPanel({ institutionId = 1, onScoreClick, onClo
     async function fetchAll() {
       try {
         const [ratiosRes, starsRes, scoresRes] = await Promise.all([
-          axios.get('http://localhost:3001/ratios'),
-          axios.get('http://localhost:3001/starsmetric'),
-          axios.post('http://localhost:3001/scoresById', {
+          axios.get('http://localhost:3001/metrics/ratios'),
+          axios.get('http://localhost:3001/metrics/stars'),
+          axios.post('http://localhost:3001/scores/scoresById', {
             id_institution: institutionId
           })
         ]);
@@ -76,15 +105,18 @@ export default function UniversityPanel({ institutionId = 1, onScoreClick, onClo
         const starsMeta = starsRes.data;
         const scoreData = scoresRes.data;
 
-        const combinedRatios = ratioMeta.map(meta => ({
-          id: meta.id_ratios,
-          name: meta.name,
-          description: meta.description,
-          score: scoreData.ratios_values?.[meta.id_ratios] ?? 0
-        }));
+        const combinedRatios = ratioMeta
+          .filter(meta => !alphas?.coeff_ratio || alphas.coeff_ratio[meta.id_ratios] !== 0)
+          .map(meta => ({
+            id: meta.id_ratios,
+            name: meta.name,
+            description: meta.description,
+            score: scoreData.ratios_values?.[meta.id_ratios] ?? 0
+          }));
 
         const combinedStars = starsMeta
           .filter(meta => meta.id_parent === null)
+          .filter(meta => !alphas?.coeff_op || alphas.coeff_op[meta.id_metric] !== 0)
           .map(meta => ({
             id: meta.id_metric,
             name: meta.name,
@@ -94,19 +126,19 @@ export default function UniversityPanel({ institutionId = 1, onScoreClick, onClo
             outOf: meta.denominateur
           }));
 
-        setRatios(sortByNumericId(combinedRatios));
-        setStars(sortByNumericId(combinedStars));
+        setRatios(sortMetricsByAlphas(combinedRatios, alphas, true));
+        setStars(sortMetricsByAlphas(combinedStars, alphas, false));
 
         setInstitutionName(scoreData.institution_name || "Université");
-        setScore(scoreData.global_score ?? 0);
+        setScore(institutionScore ?? scoreData.global_score ?? 0);
         setTier(computeTier(scoreData.global_score));
       } catch (err) {
-        console.error("Erreur de chargement:", err);
+        console.error("Loading error:", err);
       }
     }
 
     fetchAll();
-  }, [institutionId]);
+  }, [institutionId, alphas]);
 
   function computeTier(score) {
     if (score >= 300) return "gold";
@@ -137,29 +169,30 @@ export default function UniversityPanel({ institutionId = 1, onScoreClick, onClo
                   outOf={metric.outOf}
                   metricName={metric.name}
                   description={metric.description}
-                  denominateur={metric.denominateur}
                   onClick={onScoreClick}
                 />
               ))}
             </div>
           </div>
 
-          <div className="score-section">
-            <h4 className="score-section-title">Observations</h4>
-            <div className="score-grid">
-              {ratios.map(metric => (
-                <ScoreBar
-                  key={metric.id}
-                  id={metric.id}
-                  score={metric.score}
-                  metricName={metric.name}
-                  description={metric.description}
-                  onClick={onScoreClick}
-                  isRatio={true}
-                />
-              ))}
+          {showRatios && (
+            <div className="score-section">
+              <h4 className="score-section-title">Observations</h4>
+              <div className="score-grid">
+                {ratios.map(metric => (
+                  <ScoreBar
+                    key={metric.id}
+                    id={metric.id}
+                    score={metric.score}
+                    metricName={metric.name}
+                    description={metric.description}
+                    onClick={onScoreClick}
+                    isRatio={true}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
