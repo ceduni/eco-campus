@@ -61,7 +61,7 @@ const LandingPage = () => {
     fetchAllData();
   }, [selectedInstitutionId]);
 
-  // 🔧 New logic to detect if a panel is open
+
   const isPanelOpen = !!(
     selectedInstitutionId ||
     activeScore ||
@@ -83,7 +83,7 @@ const LandingPage = () => {
         }}
       />
 
-      <Header isPanelOpen={isPanelOpen} /> {/* ✅ Pass to Header */}
+      <Header isPanelOpen={isPanelOpen} /> 
 
       <Sidebar
         mapInstance={mapInstance}
