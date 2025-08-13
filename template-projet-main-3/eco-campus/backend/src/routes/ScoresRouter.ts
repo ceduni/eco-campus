@@ -1,7 +1,7 @@
 
 import express from 'express';
 //import { getGlobalScores, getStarsScore, getGlobalScoresPerso } from '../controllers/institutionController';
-import { getGlobalScores, getStarsScore, getGlobalStarsScore} from '../controllers/ScoresController';
+import { getGlobalScores, getStarsScore, getGlobalStarsScore, getInstitutionDataById} from '../controllers/ScoresController';
 import supabase from '../supabaseClient';
 
 
@@ -17,6 +17,8 @@ router.get('/stars', getStarsScore);
 
 // route pour obtenir le score final de stars
 router.get('/globalstarsscores', getGlobalStarsScore);
+
+router.post('/scoresById', getInstitutionDataById); //could also be  get, don't know why i have a bug 
 
 
 

@@ -3,9 +3,17 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  z-index: 0;
 }
 
+.main-content-wrapper {
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
 
+.panel-visible {
+  transform: translateX(-420px); 
+}
 
 .map {
   position: absolute;
@@ -38,5 +46,9 @@ header {
   right: 20px;
   z-index: 10;
 
+}
+
+.btn-container.shifted {
+  left: 420px; 
 }
 
