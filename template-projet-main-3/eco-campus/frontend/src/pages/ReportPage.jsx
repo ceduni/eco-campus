@@ -4,17 +4,21 @@ import Header from '../components/Header';
 import UniversityBarChart from '../components/UniversityBarChart';
 import UniversityBox from '../components/UniversityBox';
 import ExpandedUniversityBox from '../components/ExpandedUniversityBox';
+import CompareView from '../components/CompareView';
 import './ReportPage.css';
 
 const ReportPage = () => {
-  const [scores, setScores] = useState([]);                // [{ id_institution, score }]
-  const [universities, setUniversities] = useState([]);    // [{ id_institution, name, ... }]
+  const [scores, setScores] = useState([]);
+  const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alphas, setAlphas] = useState({ coeff_op: {}, coeff_ratio: {} });
   const [selectedUnis, setSelectedUnis] = useState([]);
-  const [expandedUni, setExpandedUni] = useState(null);    // { id, name, score }
+  const [expandedUni, setExpandedUni] = useState(null); // { id, name, score }
 
-  // Charger sélection depuis localStorage (et écouter les changements)
+  // NEW: vue courante: 'list' | 'expanded' | 'compare'
+  const [view, setView] = useState('list');
+
+  // Charger sélection (et écouter les changements)
   useEffect(() => {
     const stored = localStorage.getItem('selectedUniversities');
     setSelectedUnis(stored ? JSON.parse(stored) : []);
@@ -65,7 +69,21 @@ const ReportPage = () => {
 
   if (loading) return <p>Chargement des scores…</p>;
 
-  const isExpanded = !!expandedUni;
+  const isExpanded = view === 'expanded';
+  const isCompare  = view === 'compare';
+
+  // Handlers: gardent les anciennes fonctionnalités + ajout du mode compare
+  const openExpanded = ({ id, name, score }) => {
+    setExpandedUni({ id, name, score });
+    setView('expanded');
+  };
+  const backFromExpanded = () => {
+    setExpandedUni(null);
+    setView('list');
+  };
+
+  const handleCompare = () => setView('compare');
+  const backFromCompare = () => setView('list');
 
   return (
     <div className={`report-container ${isExpanded ? 'expanded' : ''}`}>
@@ -84,32 +102,41 @@ const ReportPage = () => {
         />
       </div>
 
-      {/* Lien de retour quand on est en mode “expanded” */}
+      {/* === VUE COMPARAISON === */}
+      {isCompare && (
+        <CompareView
+          ids={selectedUnis?.slice(0, 2)}   // on prend 2 ids de la sélection existante
+          universities={universities}
+          alphas={alphas}
+          onBack={backFromCompare}
+        />
+      )}
+
+      {/* === VUE EXPANDED === */}
       {isExpanded && (
         <div className="back-row">
-          <button className="back-link" onClick={() => setExpandedUni(null)}></button>
+          <button className="back-link" onClick={backFromExpanded}></button>
         </div>
       )}
 
-      {/* Contenu : soit les box, soit le rapport détaillé */}
       {isExpanded ? (
         <ExpandedUniversityBox
           institutionId={expandedUni.id}
           institutionName={idToName[expandedUni.id] || expandedUni.name}
           initialGlobalScore={expandedUni.score}
           alphas={alphas}
-          onBack={() => setExpandedUni(null)}
+          onBack={backFromExpanded}
         />
-      ) : (
+      ) : !isCompare ? (
         <div className="boxes-area">
-          {filteredScores.length >0 && (
+          {/* Bouton Comparaison (visible seulement en mode liste) */}
+          {filteredScores.length > 0 && (
             <div className="compare-btn-wrapper">
-              <button className="compare-button">Comparaison</button>
-              
+              <button className="compare-button" onClick={handleCompare}>Comparaison</button>
             </div>
           )}
 
-          {/* Afficher les boxes des universités */}
+          {/* Les UniversityBox gardent leur feature d’agrandissement */}
           {filteredScores.map((s) => (
             <UniversityBox
               key={s.id_institution}
@@ -117,12 +144,11 @@ const ReportPage = () => {
               institutionName={idToName[s.id_institution] || s.id_institution}
               initialGlobalScore={s.score}
               alphas={alphas}
-              // Quand on clique sur l’icône “Agrandir” d’une box :
-              onExpand={({ id, name, score }) => setExpandedUni({ id, name, score })}
+              onExpand={({ id, name, score }) => openExpanded({ id, name, score })}
             />
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
