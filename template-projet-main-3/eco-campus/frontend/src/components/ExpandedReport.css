@@ -1,0 +1,99 @@
+/* Feuille « papier » centrée */
+.er-paper{
+  max-width: 5000px;
+  margin: 24px auto 60px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e6e7ea;
+  padding: 60px 40px;
+  box-shadow:
+    0 10px 20px rgba(20,23,28,.06),
+    0 2px 6px rgba(20,23,28,.05);
+  line-height: 1.55;
+  color:#13161a;
+}
+
+/* Back */
+.er-toprow{ display:flex; align-items:center; justify-content:flex-start; }
+.er-back{
+  background: transparent;
+  border: none;
+  font-family: 'Anton', sans-serif;
+  font-size: 20px;
+  color:#1f4bb8;
+  cursor:pointer;
+  padding: 6px 0;
+  margin-top: -50px;
+}
+.er-back:hover{ color:#0f2e8a; text-decoration: underline; }
+
+/* Header */
+.er-header{ display:flex; flex-direction:column; align-items:center; margin-top:-40px; }
+.er-title{
+  font-family: 'Arial', sans-serif;
+  font-size: 28px;
+  letter-spacing:.2px;
+  margin: 2px 0 2px 0;
+}
+.er-medal{ margin-bottom: 10px; }
+
+/* sous‑titres */
+.er-h2{
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  margin: 12px 0 12px;
+}
+
+/* paragraphe d’intro */
+.er-paragraph{ margin: 8px 0 18px; color:#2a2e33; }
+
+/* Bloc OP / Ratio */
+.er-block{
+  border-top: 1px dashed #e2e4e8;
+  padding-top: 14px;
+  margin-top: 12px;
+}
+
+.er-opline{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom: 6px;
+}
+.er-opid{
+  color:#2f6ee6;
+  font-weight: 600;
+  text-decoration: none;
+}
+.er-opid:hover{ text-decoration: underline; }
+.er-opscore{
+  color:#111;
+  font-weight: 600;
+}
+
+.er-opname{
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  margin: 2px 0 8px;
+}
+
+.er-description{ color:#2d3137; }
+
+/* Sous‑critères */
+.er-sublist{ margin-top: 8px; display:flex; flex-direction:column; gap:10px; }
+.er-subitem{
+  background:#fafbfc;
+  border:1px solid #eceef1;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.er-subhead{ display:flex; align-items:center; gap:12px; }
+.er-subid{ color:#2f6ee6; font-weight:600; }
+.er-subscore{ margin-left:auto; color:#111; font-weight:600; }
+.er-subname{ margin-top:2px; font-weight:600; }
+.er-subdesc{ margin-top:4px; color:#454b54; }
+
+/* Impression : occupe toute la largeur, sans ombre */
+@media print{
+  .er-paper{ max-width:none; margin:0; border:none; box-shadow:none; }
+}

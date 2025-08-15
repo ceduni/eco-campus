@@ -1,126 +1,128 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import UniversityBarChart from '../components/UniversityBarChart';
+import UniversityBox from '../components/UniversityBox';
+import ExpandedUniversityBox from '../components/ExpandedUniversityBox';
 import './ReportPage.css';
 
 const ReportPage = () => {
-  const [scores, setScores] = useState([]);
-  const [details, setDetails] = useState([]); // Pour OP/valeurs par université
+  const [scores, setScores] = useState([]);                // [{ id_institution, score }]
+  const [universities, setUniversities] = useState([]);    // [{ id_institution, name, ... }]
   const [loading, setLoading] = useState(true);
   const [alphas, setAlphas] = useState({ coeff_op: {}, coeff_ratio: {} });
+  const [selectedUnis, setSelectedUnis] = useState([]);
+  const [expandedUni, setExpandedUni] = useState(null);    // { id, name, score }
 
+  // Charger sélection depuis localStorage (et écouter les changements)
   useEffect(() => {
-    const fetchScores = async () => {
+    const stored = localStorage.getItem('selectedUniversities');
+    setSelectedUnis(stored ? JSON.parse(stored) : []);
+    const onStorage = (e) => {
+      if (e.key === 'selectedUniversities') {
+        setSelectedUnis(e.newValue ? JSON.parse(e.newValue) : []);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  // Charger scores + institutions + alphas
+  useEffect(() => {
+    (async () => {
       try {
         const stored = localStorage.getItem('alphas');
         const parsed = stored ? JSON.parse(stored) : { coeff_op: {}, coeff_ratio: {} };
         setAlphas(parsed);
 
-        const res = await axios.post('http://localhost:3001/scores/globalscores', parsed);
-        const resDetails = await axios.get('http://localhost:3001/scores/globalstarsscores');
-        setScores(res.data); // [{ id_institution, score }]
-        setDetails(resDetails.data); // [{ id_institution, stars_values }]
+        const [scoreRes, uniRes] = await Promise.all([
+          axios.post('http://localhost:3001/scores/globalscores', parsed),
+          axios.get('http://localhost:3001/institutions'),
+        ]);
+
+        setScores(scoreRes.data || []);
+        setUniversities(uniRes.data || []);
       } catch (err) {
-        console.error('Erreur chargement scores rapport :', err);
+        console.error('Erreur chargement données rapport :', err);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchScores();
+    })();
   }, []);
 
-  const [opNames, setOpNames] = useState({});
+  // id -> nom
+  const idToName = useMemo(() => {
+    const map = {};
+    universities.forEach(u => { map[u.id_institution] = u.name || u.id_institution; });
+    return map;
+  }, [universities]);
 
-  useEffect(() => {
-    const fetchOPNames = async () => {
-      try {
-        const res = await axios.get('http://localhost:3001/metrics/stars');
-        const nameMap = {};
-        res.data.forEach((op) => {
-          nameMap[op.id_metric] = op.name; // ou op.label selon ta structure
-        });
-        setOpNames(nameMap);
-      } catch (err) {
-        console.error('Erreur chargement noms OP :', err);
-      }
-    };
+  // Filtre d’affichage
+  const filteredScores = useMemo(() => {
+    if (!selectedUnis?.length) return scores;
+    return scores.filter(s => selectedUnis.includes(s.id_institution));
+  }, [scores, selectedUnis]);
 
-    fetchOPNames();
-  }, []);
+  if (loading) return <p>Chargement des scores…</p>;
 
-
-  if (loading) return <p>Chargement des scores...</p>;
-
-  const getUniLogo = (name) => {
-    if (name.toLowerCase().includes('montreal')) return '/src/assets/udem.png';
-    if (name.toLowerCase().includes('concordia')) return '/src/assets/concordia.png';
-    return '/src/assets/university.png';
-  };
-
-  const getUniColor = (name) => {
-    if (name.toLowerCase().includes('montreal')) return 'gold';
-    return 'gray';
-  };
-
-  const getUniOPs = (uniId) => {
-    const data = details.find((d) => d.id_institution === uniId);
-    return data?.stars_values || {};
-  };
+  const isExpanded = !!expandedUni;
 
   return (
-    <div className="report-container">
+    <div className={`report-container ${isExpanded ? 'expanded' : ''}`}>
       <Header />
 
       <div className="report-header">
         <h2 className="report-title">Score écologique des universités</h2>
-        <button className="compare-button">Comparaison</button>
       </div>
 
+      {/* Le graphique reste toujours affiché */}
       <div className="chart-section">
-        <UniversityBarChart scores={scores} />
+        <UniversityBarChart
+          scores={filteredScores}
+          universities={universities}
+          selectedIds={selectedUnis}
+        />
       </div>
 
-      {scores.map((uni) => {
-        const ops = getUniOPs(uni.id_institution);
+      {/* Lien de retour quand on est en mode “expanded” */}
+      {isExpanded && (
+        <div className="back-row">
+          <button className="back-link" onClick={() => setExpandedUni(null)}></button>
+        </div>
+      )}
 
-        return (
-          <div key={uni.id_institution} className="uni-box">
-            <div className="uni-header">
-              <div className="uni-logo-name">
-                <img src={getUniLogo(uni.id_institution)} alt="logo" className="uni-logo" />
-                <h3>{uni.id_institution}</h3>
-              </div>
-              <div className="icons">
-                <img src="/src/assets/print.svg" alt="Print" className="icon" />
-                <img src="/src/assets/expand.svg" alt="Expand" className="icon" />
-              </div>
+      {/* Contenu : soit les box, soit le rapport détaillé */}
+      {isExpanded ? (
+        <ExpandedUniversityBox
+          institutionId={expandedUni.id}
+          institutionName={idToName[expandedUni.id] || expandedUni.name}
+          initialGlobalScore={expandedUni.score}
+          alphas={alphas}
+          onBack={() => setExpandedUni(null)}
+        />
+      ) : (
+        <div className="boxes-area">
+          {filteredScores.length >0 && (
+            <div className="compare-btn-wrapper">
+              <button className="compare-button">Comparaison</button>
+              
             </div>
+          )}
 
-            <span className={`score-badge ${getUniColor(uni.id_institution)}`}>
-              {uni.score}
-            </span>
-
-            <div className="op-grid">
-              {Object.entries(ops)
-                .filter(([opId]) => opId in alphas.coeff_op)
-                .map(([opId, value], i) => (
-                  <div key={opId} className="op-item">
-                    <div className="op-top">
-                      <img src="/src/assets/op-icon.svg" alt="OP" className="op-icon" />
-                      <span>{opId} : Nom OP à récupérer</span>
-                    </div>
-                    <div className="progress-section">
-                      <progress value={value} max="5" />
-                      <span>{value}/5</span>
-                    </div>
-                  </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+          {/* Afficher les boxes des universités */}
+          {filteredScores.map((s) => (
+            <UniversityBox
+              key={s.id_institution}
+              institutionId={s.id_institution}
+              institutionName={idToName[s.id_institution] || s.id_institution}
+              initialGlobalScore={s.score}
+              alphas={alphas}
+              // Quand on clique sur l’icône “Agrandir” d’une box :
+              onExpand={({ id, name, score }) => setExpandedUni({ id, name, score })}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

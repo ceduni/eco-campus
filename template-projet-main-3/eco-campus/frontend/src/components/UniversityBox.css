@@ -1,0 +1,71 @@
+.ubox-card {
+  position: relative;
+  padding: 50px;   
+  border:5px solid #cfcfd3;   
+  border-radius:50px;
+  margin-bottom: 70px;     
+}
+
+.ubox-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 
+              0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ubox-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+
+  opacity: 1 !important;
+  pointer-events: auto !important;
+
+  z-index: 3;
+}
+
+.ubox-iconbtn {
+  background: transparent;
+  border: none;
+  padding: 30px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ubox-iconbtn:hover {
+  transform: translateY(-1px);
+  
+}
+.ubox-iconimg{
+  margin-top: 20px; 
+  width:50px;
+  height:50px;
+  display:block;
+}
+
+
+.ubox-header{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;}
+.ubox-name{font-family:'Anton',sans-serif;font-size:1.1rem;color:#111827;}
+.ubox-medal{margin-top:-4px;}
+
+.ubox-section{background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #dcdddf;margin-top:14px;font-weight:normal;}
+.ubox-title{font-family:'Anton',sans-serif;font-size:1rem;margin-bottom:2px;color:#404142;}
+.ubox-desc{font-size:.75rem;color:#2c2d2d;margin:0 0 8px 0;}
+
+.ubox-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+
+.ubox-scorebox{background:#fff;padding:10px 12px;border-radius:12px;border:1px solid #d5d6d9;cursor:pointer;transition:box-shadow .2s;}
+.ubox-scorebox:hover{box-shadow:0 2px 8px rgba(0,0,0,.05);}
+
+.ubox-barline{display:flex;align-items:center;gap:10px;}
+.ubox-scoreid{font-family:'Anton',sans-serif;font-size:.85rem;color:#111827;text-decoration:underline;white-space:nowrap;}
+.ubox-bar{flex:1;height:20px;background:#fff;border-radius:4px;overflow:hidden;border:1px solid #eee;}
+.ubox-barfill{height:100%;border-radius:4px;transition:width .3s ease;}
+.ubox-barfill.low{background:#fb0000;}
+.ubox-barfill.medium{background:#f2c200;}
+.ubox-barfill.high{background:#01c649;}
+.ubox-scoreval{font-size:.75rem;color:#111827;min-width:42px;text-align:right;}
