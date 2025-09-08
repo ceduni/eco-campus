@@ -1,149 +1,198 @@
-import React from "react";
-import "./UniversityPanel.css";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import ScoreWidget from "../widgets/ScoreWidget";
 import { Tooltip } from 'react-tooltip';
-import 'react-tooltip/dist/react-tooltip.css'; 
+import 'react-tooltip/dist/react-tooltip.css';
+import './UniversityPanel.css';
 import './sharedPanel.css';
 
-function UniversityHeader() {
+function UniversityHeader({ name, score, tier }) {
   return (
     <div className="university-header">
-      <div className="university-name">Université de Montréal</div>
+      <div className="university-name">{name}</div>
       <div className="university-medal">
-        <ScoreWidget score={322} label="Université de Montréal" tier="gold" />
+        <ScoreWidget score={score} label={name} tier={tier} />
       </div>
     </div>
   );
 }
 
-function OpScore({ id, score, outOf, description, icon, subcriteria, onClick }) {
-  const percentage = (score / outOf) * 100;
+function ScoreBar({ id, score, outOf, description, onClick, metricName, isRatio = false }) {
+  const [tooltipReady, setTooltipReady] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setTooltipReady(true), 0);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  let percentage;
+  if (isRatio) {
+    percentage = score;
+  } else {
+    percentage = outOf ? (score / outOf) * 100 : 0;
+  }
+
   let fillClass = "low";
   if (percentage >= 80) fillClass = "high";
   else if (percentage >= 50) fillClass = "medium";
 
   return (
-    <div className="score-box op" onClick={() => onClick({ id, score, outOf, description, icon, subcriteria })}>
-      <div className="score-id" data-tooltip-id={`tooltip-${id}`} data-tooltip-content={description}>
-        {id}
+    <div className="score-box-horizontal" onClick={() => onClick?.({ id, score, outOf, description, metricName })}>
+      {tooltipReady && (
+        <Tooltip
+          anchorSelect={`[data-tooltip-anchor="${id}"]`}
+          place="top"
+          effect="solid"
+        />
+      )}
+      <div className="bar-and-score">
+        <div
+          className="score-id"
+          data-tooltip-anchor={id}
+          data-tooltip-content={metricName}
+        >
+          {id}
+        </div>
+        <div className="score-bar-container">
+          <div className={`score-bar-fill ${fillClass}`} style={{ width: `${percentage}%` }} />
+        </div>
+        <div className="score-value">
+          {isRatio ? score : `${score} / ${outOf}`}
+        </div>
       </div>
-      <Tooltip id={`tooltip-${id}`} place="top" effect="solid" />
-      <div className="score-bar-container">
-        <div className={`score-bar-fill ${fillClass}`} style={{ width: `${percentage}%` }}></div>
-      </div>
-      <div className="score-value">{score} / {outOf}</div>
     </div>
   );
 }
 
-function RatioScore({ id, score, outOf, description, onClick }) {
-  const percentage = (score / outOf) * 100;
-  let fillClass = "low";
-  if (percentage >= 80) fillClass = "high";
-  else if (percentage >= 50) fillClass = "medium";
+function sortMetricsByAlphas(metrics, alphas, isRatio = false) {
+  if (!alphas) return metrics;
 
-  return (
-    <div className="score-box ratio" onClick={() => onClick({ id, score, outOf, description })}>
-      <div className="score-id" data-tooltip-id={`tooltip-${id}`} data-tooltip-content={description}>
-        {id}
-      </div>
-      <Tooltip id={`tooltip-${id}`} place="top" effect="solid" />
-      <div className="score-bar-container">
-        <div className={`score-bar-fill ${fillClass}`} style={{ width: `${percentage}%` }}></div>
-      </div>
-      <div className="score-value">{score} / {outOf}</div>
-    </div>
-  );
+  const coeffs = isRatio ? alphas.coeff_ratio : alphas.coeff_op;
+
+  return [...metrics].sort((a, b) => {
+    const weightA = coeffs?.[a.id] ?? 0;
+    const weightB = coeffs?.[b.id] ?? 0;
+    return weightB - weightA;
+  });
 }
 
-function OpScoreGrid({ onClick }) {
-  const opScores = [
-    {
-  id: "OP1",
-  score: 3,
-  outOf: 5,
-  description: "Building design and construction",
-  icon: "/icons/icon-op1.svg",
-  subcriteria: [
-    {
-      label: "OP 1.1",
-      score: 3,
-      outOf: 5,
-      text: "Percentage of new floor area designed and constructed to green building standards.\n\nThe green building standard: It addresses energy, indoor environmental quality (IEQ), material/waste, transportation, water and the ecological aspects of the site."
+export default function UniversityPanel({
+  institutionId,
+  institutionScore,
+  onScoreClick,
+  onClose,
+  showRatios,
+  alphas
+}) {
+  const [institutionName, setInstitutionName] = useState('');
+  const [score, setScore] = useState(0);
+  const [tier, setTier] = useState('');
+  const [stars, setStars] = useState([]);
+  const [ratios, setRatios] = useState([]);
+
+  useEffect(() => {
+    async function fetchAll() {
+      try {
+        const [ratiosRes, starsRes, scoresRes] = await Promise.all([
+          axios.get('http://localhost:3001/metrics/ratios'),
+          axios.get('http://localhost:3001/metrics/stars'),
+          axios.post('http://localhost:3001/scores/scoresById', {
+            id_institution: institutionId
+          })
+        ]);
+
+        const ratioMeta = ratiosRes.data;
+        const starsMeta = starsRes.data;
+        const scoreData = scoresRes.data;
+
+        const combinedRatios = ratioMeta
+          .filter(meta => !alphas?.coeff_ratio || alphas.coeff_ratio[meta.id_ratios] !== 0)
+          .map(meta => ({
+            id: meta.id_ratios,
+            name: meta.name,
+            description: meta.description,
+            score: scoreData.ratios_values?.[meta.id_ratios] ?? 0
+          }));
+
+        const combinedStars = starsMeta
+          .filter(meta => meta.id_parent === null)
+          .filter(meta => !alphas?.coeff_op || alphas.coeff_op[meta.id_metric] !== 0)
+          .map(meta => ({
+            id: meta.id_metric,
+            name: meta.name,
+            description: meta.description,
+            category: meta.category,
+            score: scoreData.stars_values?.[meta.id_metric] ?? 0,
+            outOf: meta.denominateur
+          }));
+
+        setRatios(sortMetricsByAlphas(combinedRatios, alphas, true));
+        setStars(sortMetricsByAlphas(combinedStars, alphas, false));
+
+        setInstitutionName(scoreData.institution_name || "Université");
+        setScore(institutionScore ?? scoreData.global_score ?? 0);
+        setTier(computeTier(scoreData.global_score));
+      } catch (err) {
+        console.error("Loading error:", err);
+      }
     }
-  ]
-  },
 
-    {
-      id: "OP2",
-      score: 3,
-      outOf: 5,
-      description: "Exploitation et entretien des bâtiments",
-      icon: "/icons/icon-op2.svg",
-      subcriteria: [
-        { label: "OP 2.1", text: "Use of green cleaning products" },
-        { label: "OP 2.2", text: "Maintenance of efficient systems" }
-      ]
-    },
-    { id: "OP4", score: 5, outOf: 5, description: "Terrains gérés de manière écologique" },
-    { id: "OP5", score: 1, outOf: 5, description: "Consommation d'énergie" },
-    { id: "OP6", score: 5, outOf: 5, description: "Émissions de gaz à effet de serre" },
-    { id: "OP7", score: 3, outOf: 5, description: "Approvisionnement en services de restauration" },
-    { id: "OP8", score: 5, outOf: 5, description: "Récupération alimentaire" },
-    { id: "OP9", score: 1, outOf: 5, description: "Systèmes d'approvisionnement durable" },
-    { id: "OP10", score: 5, outOf: 5, description: "Biens achetés" },
-    { id: "OP11", score: 2, outOf: 5, description: "Gestion du matériel" },
-    { id: "OP12", score: 0, outOf: 5, description: "Production et valorisation des déchets" },
-    { id: "OP13", score: 5, outOf: 5, description: "Flotte de véhicules" },
-    { id: "OP14", score: 3, outOf: 5, description: "Répartition modale des trajets domicile-travail" },
-    { id: "OP15", score: 3, outOf: 5, description: "Voyages aériens" }
-    
-  ];
+    fetchAll();
+  }, [institutionId, alphas]);
 
-  return (
-    <div className="score-grid">
-      {opScores.map((item, index) => (
-        <OpScore key={index} {...item} onClick={onClick} />
-      ))}
-    </div>
-  );
-}
+  function computeTier(score) {
+    if (score >= 300) return "gold";
+    if (score >= 200) return "silver";
+    if (score >= 100) return "bronze";
+    return "participant";
+  }
 
-function RatioScoreGrid({ onClick }) {
-  const mockScores = [
-    { id: "R1", score: 4, outOf: 5, description: ".." },
-    { id: "R2", score: 3, outOf: 5, description: ".." },
-    { id: "R3", score: 2, outOf: 5, description: ".." },
-    { id: "R4", score: 5, outOf: 5, description: ".." },
-    { id: "R5", score: 5, outOf: 5, description: ".." }
-  ];
-
-  return (
-    <div className="score-grid">
-      {mockScores.map((item, index) => (
-        <RatioScore key={index} {...item} onClick={onClick} />
-      ))}
-    </div>
-  );
-}
-
-export default function UniversityPanel({ onScoreClick }) {
   return (
     <div className="panel-container">
       <div className="university-panel-scrollable">
         <div className="university-panel">
-          <UniversityHeader />
+          <button className="close-button" onClick={onClose}>×</button>
+
+          <UniversityHeader name={institutionName} score={score} tier={tier} />
+
           <div className="score-section">
-            <h4 className="score-section-title">STARS :</h4>
+            <h4 className="score-section-title">STARS</h4>
             <h6 className="score-section-description">
               The Sustainability Tracking, Assessment & Rating System
             </h6>
-            <OpScoreGrid onClick={onScoreClick} />
+            <div className="score-grid">
+              {stars.map(metric => (
+                <ScoreBar
+                  key={metric.id}
+                  id={metric.id}
+                  score={metric.score}
+                  outOf={metric.outOf}
+                  metricName={metric.name}
+                  description={metric.description}
+                  onClick={onScoreClick}
+                />
+              ))}
+            </div>
           </div>
-          <div className="score-section">
-            <h4 className="score-section-title">OBSERVATIONS</h4>
-            <RatioScoreGrid onClick={onScoreClick} />
-          </div>
+
+          {showRatios && (
+            <div className="score-section">
+              <h4 className="score-section-title">Observations</h4>
+              <div className="score-grid">
+                {ratios.map(metric => (
+                  <ScoreBar
+                    key={metric.id}
+                    id={metric.id}
+                    score={metric.score}
+                    metricName={metric.name}
+                    description={metric.description}
+                    onClick={onScoreClick}
+                    isRatio={true}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

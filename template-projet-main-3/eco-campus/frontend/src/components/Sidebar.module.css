@@ -1,19 +1,82 @@
 .sidebar {
   position: absolute;
   top: 150px;
-  left: 70px;
+  left: 40px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 10px;
   z-index: 1001;
 }
-
 
 .control {
   background: transparent;
   border: none;
   padding: 0;
   outline: none;
-  box-shadow: none; 
+  box-shadow: none;
   cursor: pointer;
+  width: 110px;         
+  height: 110px;
+}
+
+
+.control img {
+  width: 60%;
+  height: 60%;
+}
+
+.compareButton {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: white;
+  color: black;
+  font-family: 'Anton', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 15px auto;
+  position: relative;
+}
+
+
+.compareButton:hover:not(.active):not(.disabled) {
+  background-color: #F4B9F7;
+}
+
+
+.compareButton.active {
+  background-color: #F4B9F7;
+  color: rgb(0, 0, 0);
+  border-color: #000000;
+}
+
+
+.compareButton.disabled {
+  background-color: #e0e0e0;
+  color: #474646;
+  border-color: #ccc;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+
+
+.custom-tooltip {
+  background: white !important;
+  color: black !important;
+  font-family: 'Anton', sans-serif !important;
+  font-size: 12px !important;
+  border-radius: 10px !important;
+  border: 1px solid black !important;
+  padding: 10px 12px !important;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 220px;
+  line-height: 1.4;
 }

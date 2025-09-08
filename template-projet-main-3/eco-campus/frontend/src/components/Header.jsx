@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
 import styles from './Header.module.css';
 
-const Header = () => {
+const Header = ({ isPanelOpen }) => {
   const location = useLocation();     
   const navigate = useNavigate();     
   const [showDropdown, setShowDropdown] = useState(false);
@@ -23,7 +23,8 @@ const Header = () => {
         <h1 className={styles.logoText}>eCO-c</h1>
       </div>
 
-      <div className={styles.toggleButtons}>
+      {/* Only this part will shift left when panel is open */}
+      <div className={`${styles.toggleButtons} ${isPanelOpen ? styles.panelOpen : ''}`}>
         <button
           className={`${styles.btn} ${location.pathname === '/' ? styles.active : ''}`}
           onClick={() => navigate('/')}
@@ -38,18 +39,6 @@ const Header = () => {
           <img src="/src/assets/rapport.svg" alt="Rapport" />
           <span>RAPPORT</span>
         </button>
-      </div>
-
-      <div className={styles.languageSwitcher}>
-        <button className={styles.languageButton} onClick={toggleDropdown}>
-          <img src="/src/assets/france.svg" alt="Langue" />
-        </button>
-        {showDropdown && (
-          <div className={styles.dropdown}>
-            <div onClick={() => changeLanguage('fr')}>Français</div>
-            <div onClick={() => changeLanguage('en')}>English</div>
-          </div>
-        )}
       </div>
     </header>
   );

@@ -1,7 +1,7 @@
-import { institutionData } from '../models/institutionData';
+import { Scores } from '../models/Scores';
 import { Alphas } from '../models/Alphas';
 
-export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
+export function calculateGlobalScores(data: Scores[], alphas: Alphas) {
   type ValuesMap = { [key: string]: number };
   const results: { id_institution: string; score: number }[] = [];
 
@@ -29,7 +29,7 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
 
     results.push({
       id_institution: id.toString(),
-      score: total * 10
+      score: Math.round(total * 10)
     });
   }
 
@@ -38,14 +38,14 @@ export function calculateGlobalScores(data: institutionData[], alphas: Alphas) {
 
 
 export function calculateGlobalScoreById(
-  institution: institutionData,
+  score: Scores,
   alphas: Alphas
 ): number {
   const coeffRatio = alphas.getCoeffRatio();
   const coeffOp = alphas.getCoeffOp();
 
-  const ratios = institution.getRatiosValues();
-  const ops = institution.getOpValues();
+  const ratios = score.getRatiosValues();
+  const ops = score.getOpValues();
 
   let total = 0;
 
@@ -61,25 +61,3 @@ export function calculateGlobalScoreById(
 
   return total * 10;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

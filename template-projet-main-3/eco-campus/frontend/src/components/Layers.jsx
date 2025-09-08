@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import styles from './Layers.module.css';
 import axios from 'axios';
 import { ScoreDisplayStars } from './ScoreDisplay';
+import { AllZonesLayer } from './Zone'; 
+import UniversityList from './UniversityList';
 
-export const Layers = ({ mapInstance }) => {
+export const Layers = ({ mapInstance, onInstitutionSelect, selectedUniversities, setSelectedUniversities }) => {
   const [activeLayers, setActiveLayers] = useState({
     stars: false,
     zones: false,
@@ -21,8 +23,8 @@ export const Layers = ({ mapInstance }) => {
     if (layerType === 'stars') {
       console.log('Afficher ou cacher les étoiles');
       try {
-        const res = await axios.get('http://localhost:3001/starsmetric/finalscores');
-        setStarsScores(res.data); 
+        const res = await axios.get('http://localhost:3001/scores/globalstarsscores');
+        setStarsScores(res.data);
       } catch (err) {
         console.error('Erreur stars:', err);
       }
@@ -30,6 +32,7 @@ export const Layers = ({ mapInstance }) => {
 
     if (layerType === 'zones') {
       console.log('Afficher ou cacher les zones vertes');
+
     }
 
     if (layerType === 'universite') {
@@ -78,7 +81,18 @@ export const Layers = ({ mapInstance }) => {
       </div>
 
       {activeLayers.stars && starsScores && (
-        <ScoreDisplayStars scores={starsScores} mapInstance={mapInstance} />
+        <ScoreDisplayStars scores={starsScores} mapInstance={mapInstance} onInstitutionSelect={onInstitutionSelect}/>
+      )}
+
+      {activeLayers.zones && (
+        <AllZonesLayer map={mapInstance} />
+      )}
+
+      {activeLayers.universite && (
+        <UniversityList
+          selectedUniversities={selectedUniversities}
+          setSelectedUniversities={setSelectedUniversities}
+        />
       )}
     </div>
   );
