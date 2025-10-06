@@ -3,7 +3,8 @@
 ---
 
 ##  À propos du projet
-**eCO-Campus** est une application web full-stack développée dans le cadre d’un projet supervisé par professeur Lafontant à l’Université de Montréal.  
+**eCO-C** est une application web full-stack développée dans le cadre d’un projet supervisé par professeur Lafontant à l’Université de Montréal. 
+
 L’objectif du projet est de permettre la **visualisation d’indicateurs environnementaux** selon le cadre d’évaluation **STARS**, à travers une **carte interactive**, des **rapports dynamiques** et un **système de calcul automatisé des scores**.
 
 ###  Outils et technologies
