@@ -28,7 +28,8 @@ L’objectif du projet est de permettre la **visualisation d’indicateurs envir
 ---
 
 ##  About the Project
-**eCO-Campus** is a full-stack web application developed as part of a supervised project by professor Lafontant at the University of Montreal.  
+**eCO-C** is a full-stack web application developed as part of a supervised project by professor Lafontant at the University of Montreal.  
+
 The goal of the project is to **visualize environmental indicators** based on the **STARS** framework through an **interactive map**, **dynamic reports**, and an **automated scoring system**.
 
 ###  Tools and Technologies
