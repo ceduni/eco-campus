@@ -9,7 +9,7 @@ import { createRoot } from 'react-dom/client';
 
 export const initialMarkers = []; 
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibmFkYWFsZW0iLCJhIjoiY21jcGN6MTZoMDUzNTJtb3JpMGtqcno4NyJ9.tkeUmArmX6hFM6VyyfHbtA';
+mapboxgl.accessToken = 'pk.eyJ1IjoiamVyZW1pZWQiLCJhIjoiY21wMWdiZTQ5MDB0bTJxbjY0ZGg1OTQydCJ9.gyqiEklVVQbLRz6541pDMw';
 
 export default function Map({ onMapReady, onInstitutionClick }) {
   const mapContainer = useRef(null);
